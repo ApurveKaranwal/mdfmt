@@ -1,0 +1,158 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* TipTap Editor Styles */
+.editor-area .tiptap {
+  outline: none;
+  min-height: 500px;
+  padding: 2rem;
+}
+
+.editor-area .tiptap h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dark .editor-area .tiptap h1 {
+  border-bottom-color: #374151;
+}
+
+.editor-area .tiptap h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dark .editor-area .tiptap h2 {
+  border-bottom-color: #374151;
+}
+
+.editor-area .tiptap h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.editor-area .tiptap p {
+  margin-bottom: 0.75rem;
+  line-height: 1.7;
+}
+
+.editor-area .tiptap ul,
+.editor-area .tiptap ol {
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.editor-area .tiptap li {
+  margin-bottom: 0.25rem;
+}
+
+.editor-area .tiptap blockquote {
+  border-left: 4px solid #3b82f6;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.dark .editor-area .tiptap blockquote {
+  border-left-color: #60a5fa;
+  color: #9ca3af;
+}
+
+.editor-area .tiptap code {
+  background-color: #f3f4f6;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-family: 'Fira Code', ui-monospace, monospace;
+  font-size: 0.9em;
+}
+
+.dark .editor-area .tiptap code {
+  background-color: #1f2937;
+}
+
+.editor-area .tiptap pre {
+  background-color: #1f2937;
+  color: #e5e7eb;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: 'Fira Code', ui-monospace, monospace;
+  font-size: 0.875rem;
+  margin: 1rem 0;
+}
+
+.editor-area .tiptap pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+
+.editor-area .tiptap hr {
+  border: 0;
+  border-top: 2px solid #e5e7eb;
+  margin: 2rem 0;
+}
+
+.dark .editor-area .tiptap hr {
+  border-top-color: #374151;
+}
+
+.editor-area .tiptap a {
+  color: #3b82f6;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.editor-area .tiptap table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+.editor-area .tiptap th,
+.editor-area .tiptap td {
+  border: 1px solid #d1d5db;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.dark .editor-area .tiptap th,
+.dark .editor-area .tiptap td {
+  border-color: #4b5563;
+}
+
+.editor-area .tiptap th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+}
+
+.dark .editor-area .tiptap th {
+  background-color: #1f2937;
+}
+
+.editor-area .tiptap ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+}
+
+.editor-area .tiptap ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.editor-area .tiptap ul[data-type="taskList"] li label {
+  margin-top: 2px;
+}
