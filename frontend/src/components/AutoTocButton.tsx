@@ -53,7 +53,7 @@ const AutoTocButton = ({ editor }: AutoTocButtonProps) => {
     const handleInsert = () => {
         if (!editor || headings.length === 0) return;
 
-        let tocHtml = '<h2>📑 Table of Contents</h2><ul>';
+        let tocHtml = '<h2>Table of Contents</h2><ul>';
         headings.forEach((h) => {
             const indent = h.level > 1 ? '<ul>'.repeat(h.level - 1) : '';
             const indentClose = h.level > 1 ? '</ul>'.repeat(h.level - 1) : '';

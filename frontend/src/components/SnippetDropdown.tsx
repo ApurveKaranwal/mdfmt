@@ -23,7 +23,7 @@ const SNIPPETS: Snippet[] = [
         icon: <FileText className="w-4 h-4" />,
         description: 'Auto-linked section navigation',
         content:
-            '<h2>📑 Table of Contents</h2>' +
+            '<h2>Table of Contents</h2>' +
             '<ul>' +
             '<li><a href="#about">About</a></li>' +
             '<li><a href="#features">Features</a></li>' +
@@ -39,7 +39,7 @@ const SNIPPETS: Snippet[] = [
         icon: <Terminal className="w-4 h-4" />,
         description: 'Setup and install instructions',
         content:
-            '<h2>⚡ Installation</h2>' +
+            '<h2>Installation</h2>' +
             '<p>Clone the repository:</p>' +
             '<pre><code>git clone https://github.com/username/repo.git\ncd repo</code></pre>' +
             '<p>Install dependencies:</p>' +
@@ -53,7 +53,7 @@ const SNIPPETS: Snippet[] = [
         icon: <BookOpen className="w-4 h-4" />,
         description: 'How to use the project',
         content:
-            '<h2>🚀 Usage</h2>' +
+            '<h2>Usage</h2>' +
             '<p>Here\'s a quick example to get started:</p>' +
             '<pre><code>import { example } from \'your-package\';\n\nconst result = example();\nconsole.log(result);</code></pre>' +
             '<p>For more examples, see the <a href="#documentation">documentation</a>.</p>',
@@ -64,7 +64,7 @@ const SNIPPETS: Snippet[] = [
         icon: <Users className="w-4 h-4" />,
         description: 'Contribution guidelines',
         content:
-            '<h2>🤝 Contributing</h2>' +
+            '<h2>Contributing</h2>' +
             '<p>Contributions are welcome! Here\'s how you can help:</p>' +
             '<ol>' +
             '<li>Fork the repository</li>' +
@@ -80,7 +80,7 @@ const SNIPPETS: Snippet[] = [
         icon: <Scale className="w-4 h-4" />,
         description: 'License section',
         content:
-            '<h2>📄 License</h2>' +
+            '<h2>License</h2>' +
             '<p>This project is licensed under the <strong>MIT License</strong> — see the <a href="LICENSE">LICENSE</a> file for details.</p>',
     },
     {
@@ -89,7 +89,7 @@ const SNIPPETS: Snippet[] = [
         icon: <Heart className="w-4 h-4" />,
         description: 'Credits and thanks',
         content:
-            '<h2>🙏 Acknowledgements</h2>' +
+            '<h2>Acknowledgements</h2>' +
             '<ul>' +
             '<li><a href="https://example.com">Awesome Library</a> — for making X possible</li>' +
             '<li><a href="https://example.com">Another Resource</a> — inspiration and guidance</li>' +
@@ -102,7 +102,7 @@ const SNIPPETS: Snippet[] = [
         icon: <ChevronRight className="w-4 h-4" />,
         description: 'Expandable details block',
         content:
-            '<h3>🔽 Details</h3>' +
+            '<h3>Details</h3>' +
             '<blockquote>' +
             '<p><strong>&lt;details&gt;&lt;summary&gt;Click to expand&lt;/summary&gt;</strong></p>' +
             '<p>Your hidden content goes here. This will be collapsed by default on GitHub.</p>' +

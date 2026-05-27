@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { TaskList } from '@tiptap/extension-task-list';
@@ -15,21 +15,14 @@ import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import {
-  PenTool, Moon, Sun, Download, Copy, LayoutTemplate,
-  ImageIcon, Tags, Github, Smile, Palette, Globe,
-  Eye, Code2,
+  Copy, Eye, Code2, BookOpen, FileDown, Upload, Trash2, List
 } from 'lucide-react';
 import { useThemeStore } from '../store/useThemeStore';
+import { useDraftStore } from '../store/useDraftStore';
 import Toolbar from '../components/Toolbar';
-import InsertImageModal from '../components/InsertImageModal';
-import BadgePickerModal from '../components/BadgePickerModal';
-import GitHubStatsModal from '../components/GitHubStatsModal';
-import SnippetDropdown from '../components/SnippetDropdown';
-import EmojiPickerModal from '../components/EmojiPickerModal';
-import AlertBlockDropdown from '../components/AlertBlockDropdown';
-import CustomBadgeModal from '../components/CustomBadgeModal';
-import SocialLinksModal from '../components/SocialLinksModal';
-import AutoTocButton from '../components/AutoTocButton';
+import TableToolbar from '../components/TableToolbar';
+import Navbar from '../components/Navbar';
+import { markdownToHtml } from '../lib/markdownParser';
 
 // Configure Turndown for GitHub Flavored Markdown
 const turndownService = new TurndownService({
@@ -45,7 +38,6 @@ turndownService.addRule('strikethrough', {
   }
 });
 
-// Add image rule for proper markdown output
 turndownService.addRule('image', {
   filter: 'img',
   replacement: function (_content: string, node: Node) {
@@ -57,18 +49,14 @@ turndownService.addRule('image', {
 });
 
 const EditorPage = () => {
-  const { isDarkMode, toggleDarkMode } = useThemeStore();
-  const [markdown, setMarkdown] = useState('');
+  const { isDarkMode } = useThemeStore();
+  const { markdown, htmlContent, setMarkdown, setHtmlContent, clearDraft } = useDraftStore();
+
   const [copied, setCopied] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
-
-  // Modal states
-  const [showImageModal, setShowImageModal] = useState(false);
-  const [showBadgeModal, setShowBadgeModal] = useState(false);
-  const [showGitHubModal, setShowGitHubModal] = useState(false);
-  const [showEmojiModal, setShowEmojiModal] = useState(false);
-  const [showCustomBadgeModal, setShowCustomBadgeModal] = useState(false);
-  const [showSocialModal, setShowSocialModal] = useState(false);
+  const [showOutline, setShowOutline] = useState(false);
+  const [outline, setOutline] = useState<{ level: number; text: string; id: string }[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const editor = useEditor({
     extensions: [
@@ -82,7 +70,7 @@ const EditorPage = () => {
       TableHeader,
       TableCell,
     ],
-    content: `<h1>Welcome to README Studio</h1><p>Start typing to design your beautiful README.</p>`,
+    content: htmlContent,
     editorProps: {
       attributes: {
         class: 'focus:outline-none min-h-[500px] p-8',
@@ -90,16 +78,72 @@ const EditorPage = () => {
     },
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
-      setMarkdown(turndownService.turndown(html));
+      const md = turndownService.turndown(html);
+      setMarkdown(md);
+      setHtmlContent(html);
     },
   });
 
+  // Sync editor content with global store changes (e.g. from template load or AI generate)
   useEffect(() => {
-    if (editor) {
+    if (editor && htmlContent !== editor.getHTML()) {
+      editor.commands.setContent(htmlContent);
+    }
+  }, [htmlContent, editor]);
+
+  // Sync initial markdown on load if missing
+  useEffect(() => {
+    if (editor && !markdown) {
       const html = editor.getHTML();
       setMarkdown(turndownService.turndown(html));
     }
   }, [editor]);
+
+  // Outline tracker
+  useEffect(() => {
+    if (!editor) return;
+    const updateOutline = () => {
+      const items: { level: number; text: string; id: string }[] = [];
+      editor.state.doc.descendants((node) => {
+        if (node.type.name === 'heading') {
+          const text = node.textContent;
+          const id = text
+            .toLowerCase()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .trim();
+          items.push({ level: node.attrs.level, text, id });
+        }
+      });
+      setOutline(items);
+    };
+
+    editor.on('update', updateOutline);
+    updateOutline();
+    return () => {
+      editor.off('update', updateOutline);
+    };
+  }, [editor]);
+
+  const scrollToHeading = (text: string) => {
+    const editorEl = document.querySelector('.editor-area .tiptap');
+    if (!editorEl) return;
+    const headings = editorEl.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    for (let i = 0; i < headings.length; i++) {
+      if (headings[i].textContent === text) {
+        headings[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const target = headings[i] as HTMLElement;
+        const originalBg = target.style.backgroundColor;
+        target.style.backgroundColor = 'rgba(226, 232, 240, 0.5)';
+        target.style.transition = 'background-color 0.5s ease';
+        setTimeout(() => {
+          target.style.backgroundColor = originalBg;
+        }, 1000);
+        break;
+      }
+    }
+  };
 
   const copyToClipboard = async () => {
     await navigator.clipboard.writeText(markdown);
@@ -117,127 +161,225 @@ const EditorPage = () => {
     URL.revokeObjectURL(url);
   };
 
-  const wordCount = markdown.trim() === '' ? 0 : markdown.trim().split(/\s+/).length;
+  const downloadHtml = () => {
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'README.html';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
-  // Row 1 insert features (existing)
-  const insertRow1 = [
-    { id: 'image', label: 'Image', icon: <ImageIcon className="w-3.5 h-3.5" />, color: 'text-blue-600 dark:text-blue-400', bg: 'hover:bg-blue-50 dark:hover:bg-blue-900/30', onClick: () => setShowImageModal(true) },
-    { id: 'badges', label: 'Badges', icon: <Tags className="w-3.5 h-3.5" />, color: 'text-purple-600 dark:text-purple-400', bg: 'hover:bg-purple-50 dark:hover:bg-purple-900/30', onClick: () => setShowBadgeModal(true) },
-    { id: 'github', label: 'Stats', icon: <Github className="w-3.5 h-3.5" />, color: 'text-gray-800 dark:text-gray-200', bg: 'hover:bg-gray-100 dark:hover:bg-gray-700', onClick: () => setShowGitHubModal(true) },
-    { id: 'emoji', label: 'Emoji', icon: <Smile className="w-3.5 h-3.5" />, color: 'text-amber-600 dark:text-amber-400', bg: 'hover:bg-amber-50 dark:hover:bg-amber-900/30', onClick: () => setShowEmojiModal(true) },
-    { id: 'custom-badge', label: 'Custom', icon: <Palette className="w-3.5 h-3.5" />, color: 'text-pink-600 dark:text-pink-400', bg: 'hover:bg-pink-50 dark:hover:bg-pink-900/30', onClick: () => setShowCustomBadgeModal(true) },
-    { id: 'social', label: 'Social', icon: <Globe className="w-3.5 h-3.5" />, color: 'text-cyan-600 dark:text-cyan-400', bg: 'hover:bg-cyan-50 dark:hover:bg-cyan-900/30', onClick: () => setShowSocialModal(true) },
-  ];
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (file && (file.name.endsWith('.md') || file.name.endsWith('.txt'))) {
+      const text = await file.text();
+      const html = markdownToHtml(text);
+      setMarkdown(text);
+      setHtmlContent(html);
+    }
+  };
+
+  const handleFileImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const text = event.target?.result as string;
+        const html = markdownToHtml(text);
+        setMarkdown(text);
+        setHtmlContent(html);
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const handleClear = () => {
+    if (window.confirm("Are you sure you want to clear the editor? This will erase your current draft.")) {
+      clearDraft();
+    }
+  };
+
+  const wordCount = markdown.trim() === '' ? 0 : markdown.trim().split(/\s+/).length;
+  const charCount = markdown.length;
+  const readingTime = Math.max(1, Math.round(wordCount / 200));
 
   return (
     <div className={isDarkMode ? 'dark' : ''}>
-      <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
-        {/* Header */}
-        <header className="flex items-center justify-between px-4 py-2 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shrink-0">
-          {/* Left: Logo */}
-          <div className="flex items-center space-x-2 shrink-0">
-            <PenTool className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-            <h1 className="text-lg font-semibold hidden lg:block">README Studio</h1>
-            <h1 className="text-lg font-semibold lg:hidden">RS</h1>
-          </div>
+      <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 text-slate-950 dark:text-slate-100 transition-colors font-sans antialiased overflow-hidden">
+        <Navbar />
 
-          {/* Center: Insert Features */}
-          <div className="flex items-center gap-0.5 mx-2">
-            <div className="flex items-center bg-gray-50 dark:bg-gray-900/50 rounded-xl p-0.5 gap-0.5 border border-gray-200 dark:border-gray-700">
-              {insertRow1.map((btn) => (
-                <button
-                  key={btn.id}
-                  onClick={btn.onClick}
-                  className={`flex items-center gap-1 px-2 py-1.5 text-xs font-medium rounded-lg transition-all active:scale-[0.97] ${btn.color} ${btn.bg}`}
-                  title={btn.label}
-                >
-                  {btn.icon}
-                  <span className="hidden md:inline">{btn.label}</span>
-                </button>
-              ))}
-              {/* Dropdowns */}
-              <AlertBlockDropdown editor={editor} />
-              <AutoTocButton editor={editor} />
-              <SnippetDropdown editor={editor} />
-            </div>
-          </div>
-
-          {/* Right: Actions */}
-          <div className="flex items-center space-x-1.5 shrink-0">
-            <button className="flex items-center px-2.5 py-1.5 text-xs font-medium bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-              <LayoutTemplate className="w-3.5 h-3.5 mr-1" />
-              <span className="hidden lg:inline">Templates</span>
+        {/* Sub-header actions */}
+        <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-2.5 flex items-center justify-between z-10 shrink-0">
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setShowOutline(!showOutline)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all ${
+                showOutline
+                  ? 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white'
+                  : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/40 text-slate-650'
+              }`}
+            >
+              <List className="w-3.5 h-3.5" />
+              Outline {outline.length > 0 && `(${outline.length})`}
+            </button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileImport}
+              accept=".md,.txt"
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center px-3 py-1.5 text-xs font-semibold border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors text-slate-650"
+              title="Import markdown file"
+            >
+              <Upload className="w-3.5 h-3.5 mr-1.5" />
+              Import MD
             </button>
             <button
-              onClick={toggleDarkMode}
-              className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              title="Toggle dark mode"
+              onClick={handleClear}
+              className="flex items-center px-3 py-1.5 text-xs font-semibold border border-red-200 dark:border-red-950/40 rounded-lg text-red-600 dark:text-red-400 bg-red-50/10 hover:bg-red-50/40 dark:hover:bg-red-950/20 transition-colors"
+              title="Start from scratch"
             >
-              {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+              Clear Draft
             </button>
+          </div>
+
+          <div className="flex items-center gap-2">
             <button
               onClick={copyToClipboard}
-              className="flex items-center px-2.5 py-1.5 text-xs font-medium border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              className="flex items-center px-3 py-1.5 text-xs font-semibold border border-slate-350 dark:border-slate-750 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
             >
-              <Copy className="w-3.5 h-3.5 mr-1" />
-              {copied ? '✓' : 'Copy'}
+              <Copy className="w-3.5 h-3.5 mr-1.5 text-slate-500" />
+              {copied ? 'Copied!' : 'Copy Markdown'}
             </button>
-            <button
-              onClick={downloadMarkdown}
-              className="flex items-center px-2.5 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-            >
-              <Download className="w-3.5 h-3.5 mr-1" />
-              Export
-            </button>
-          </div>
-        </header>
 
-        {/* Main Workspace */}
-        <main className="flex-1 flex overflow-hidden p-4 gap-4">
-          {/* Editor Pane */}
-          <div className="flex-1 flex flex-col bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden min-w-0">
+            {/* Dropdown export */}
+            <div className="relative group inline-block">
+              <button
+                onClick={downloadMarkdown}
+                className="flex items-center px-4 py-1.5 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white dark:text-slate-900 rounded-lg transition-all shadow-sm"
+              >
+                Export
+              </button>
+              <div className="absolute right-0 top-full mt-1.5 hidden group-hover:block w-36 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-850 rounded-xl shadow-xl z-50 p-1">
+                <button
+                  onClick={downloadMarkdown}
+                  className="w-full flex items-center gap-2 px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg text-left"
+                >
+                  <FileDown className="w-3.5 h-3.5" /> Raw .MD
+                </button>
+                <button
+                  onClick={downloadHtml}
+                  className="w-full flex items-center gap-2 px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg text-left"
+                >
+                  <FileDown className="w-3.5 h-3.5" /> HTML Code
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Workspace */}
+        <main className="flex-1 flex overflow-hidden p-6 gap-6">
+          {/* Collapsible Outline Pane */}
+          {showOutline && (
+            <div className="w-64 shrink-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 overflow-y-auto custom-scrollbar animate-modal-in">
+              <div className="flex items-center gap-2 pb-2.5 border-b border-slate-100 dark:border-slate-850 mb-3">
+                <BookOpen className="w-4.5 h-4.5 text-slate-650" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100">
+                  Outline
+                </h3>
+              </div>
+              {outline.length === 0 ? (
+                <div className="text-center py-6">
+                  <p className="text-[11px] text-slate-450">No headings detected.</p>
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  {outline.map((h, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => scrollToHeading(h.text)}
+                      className="w-full flex items-center gap-2 py-1.5 px-2 hover:bg-slate-50 dark:hover:bg-slate-800/60 rounded-lg text-left transition-colors"
+                      style={{ paddingLeft: `${(h.level - 1) * 10 + 6}px` }}
+                    >
+                      <span className="text-[9px] font-bold text-slate-400 uppercase">H{h.level}</span>
+                      <span className="text-xs text-slate-600 dark:text-slate-350 truncate">{h.text}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Editor Area */}
+          <div
+            className={`flex-1 flex flex-col bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden min-w-0 transition-all ${
+              !previewMode ? 'active-pane-glow' : ''
+            }`}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+          >
             <Toolbar editor={editor} />
+            <TableToolbar editor={editor} />
             <div
-              className="flex-1 overflow-y-auto cursor-text editor-area"
+              className="flex-1 overflow-y-auto cursor-text editor-area custom-scrollbar"
               onClick={() => editor?.commands.focus()}
             >
               <EditorContent editor={editor} />
             </div>
           </div>
 
-          {/* Markdown / Preview Pane */}
-          <div className="flex-1 flex flex-col bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden min-w-0">
-            {/* Pane Header with Toggle */}
-            <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 shrink-0">
-              <div className="flex items-center gap-2">
-                <div className="flex bg-gray-200 dark:bg-gray-700 rounded-lg p-0.5">
-                  <button
-                    onClick={() => setPreviewMode(false)}
-                    className={`flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${!previewMode
-                      ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                      }`}
-                  >
-                    <Code2 className="w-3 h-3" />
-                    Markdown
-                  </button>
-                  <button
-                    onClick={() => setPreviewMode(true)}
-                    className={`flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${previewMode
-                      ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                      }`}
-                  >
-                    <Eye className="w-3 h-3" />
-                    Preview
-                  </button>
-                </div>
+          {/* Preview Toggle Area */}
+          <div
+            className={`flex-1 flex flex-col bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden min-w-0 transition-all ${
+              previewMode ? 'active-pane-glow' : ''
+            }`}
+          >
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 shrink-0">
+              <div className="flex bg-slate-100 dark:bg-slate-950 p-0.5 rounded-lg border border-slate-200 dark:border-slate-800">
+                <button
+                  onClick={() => setPreviewMode(false)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                    !previewMode
+                      ? 'bg-white dark:bg-slate-850 text-slate-900 dark:text-white shadow-sm border border-slate-200/50 dark:border-slate-700/50'
+                      : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
+                  }`}
+                >
+                  <Code2 className="w-3.5 h-3.5" /> Code
+                </button>
+                <button
+                  onClick={() => setPreviewMode(true)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                    previewMode
+                      ? 'bg-white dark:bg-slate-850 text-slate-900 dark:text-white shadow-sm border border-slate-200/50 dark:border-slate-700/50'
+                      : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
+                  }`}
+                >
+                  <Eye className="w-3.5 h-3.5" /> Preview
+                </button>
               </div>
-              <span className="text-xs text-gray-400">{wordCount} words</span>
+
+              <div className="flex items-center gap-3 text-[11px] text-slate-450 dark:text-slate-550 font-medium">
+                <span>{wordCount} words</span>
+                <span className="w-1 h-1 bg-slate-200 dark:bg-slate-800 rounded-full" />
+                <span>{charCount} chars</span>
+                <span className="w-1 h-1 bg-slate-200 dark:bg-slate-800 rounded-full" />
+                <span>{readingTime}m read</span>
+              </div>
             </div>
 
-            {/* Raw Markdown or Rendered Preview */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto custom-scrollbar">
               {previewMode ? (
                 <div className="p-6 github-markdown-preview">
                   <ReactMarkdown
@@ -257,9 +399,10 @@ const EditorPage = () => {
                             language={match[1]}
                             PreTag="div"
                             customStyle={{
-                              borderRadius: '8px',
-                              margin: '1rem 0',
-                              fontSize: '0.875rem',
+                              borderRadius: '12px',
+                              margin: '1.25rem 0',
+                              fontSize: '0.85rem',
+                              border: '1px solid rgba(51, 65, 85, 0.4)'
                             }}
                           >
                             {String(children).replace(/\n$/, '')}
@@ -281,34 +424,14 @@ const EditorPage = () => {
                   </ReactMarkdown>
                 </div>
               ) : (
-                <div className="p-4 bg-gray-50 dark:bg-gray-900/50 h-full">
-                  <pre className="font-mono text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-words leading-relaxed">{markdown}</pre>
+                <div className="p-5 bg-slate-50/20 dark:bg-slate-950/10 h-full font-mono">
+                  <pre className="text-xs text-slate-750 dark:text-slate-350 whitespace-pre-wrap break-words leading-relaxed">{markdown}</pre>
                 </div>
               )}
             </div>
           </div>
         </main>
       </div>
-
-      {/* Modals */}
-      {showImageModal && editor && (
-        <InsertImageModal editor={editor} onClose={() => setShowImageModal(false)} />
-      )}
-      {showBadgeModal && editor && (
-        <BadgePickerModal editor={editor} onClose={() => setShowBadgeModal(false)} />
-      )}
-      {showGitHubModal && editor && (
-        <GitHubStatsModal editor={editor} onClose={() => setShowGitHubModal(false)} />
-      )}
-      {showEmojiModal && editor && (
-        <EmojiPickerModal editor={editor} onClose={() => setShowEmojiModal(false)} />
-      )}
-      {showCustomBadgeModal && editor && (
-        <CustomBadgeModal editor={editor} onClose={() => setShowCustomBadgeModal(false)} />
-      )}
-      {showSocialModal && editor && (
-        <SocialLinksModal editor={editor} onClose={() => setShowSocialModal(false)} />
-      )}
     </div>
   );
 };

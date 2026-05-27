@@ -1,14 +1,16 @@
 import { Route, Routes } from 'react-router-dom';
 import EditorPage from './pages/EditorPage';
-import SignInPage from './pages/SignInPage';
-import SignUpPage from './pages/SignUpPage';
+import AiGeneratorPage from './pages/AiGeneratorPage';
+import TemplatesPage from './pages/TemplatesPage';
+import BadgeStudioPage from './pages/BadgeStudioPage';
 
 function App() {
     return (
         <Routes>
             <Route path="/" element={<EditorPage />} />
-            <Route path="/signin" element={<SignInPage />} />
-            <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/ai-generator" element={<AiGeneratorPage />} />
+            <Route path="/templates" element={<TemplatesPage />} />
+            <Route path="/badge-studio" element={<BadgeStudioPage />} />
         </Routes>
     );
 }

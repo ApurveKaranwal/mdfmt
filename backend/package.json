@@ -2,9 +2,12 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node node_modules/nodemon/bin/nodemon.js --watch src --ext ts --exec \"node node_modules/ts-node/dist/bin.js src/server.ts\"",
+    "build": "node node_modules/typescript/bin/tsc",
+    "start": "node dist/server.js",
+    "typecheck": "node node_modules/typescript/bin/tsc --noEmit"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +17,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "groq-sdk": "^1.2.0",
     "jsonwebtoken": "^9.0.3"
   },
   "devDependencies": {
