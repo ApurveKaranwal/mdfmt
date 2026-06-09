@@ -19,76 +19,339 @@ interface Template {
 
 const TEMPLATES: Template[] = [
     {
-        id: 'minimal',
-        name: 'Minimalist Project',
-        description: 'A clean, high-contrast skeleton for simple scripts, small libraries, or single-file packages.',
-        icon: <FileText className="w-6 h-6 text-slate-500" />,
-        content: `# My Minimal Project\n\nA short and sweet description of what this project does and why it is awesome.\n\n## Installation\n\n\`\`\`bash\nnpm install my-minimal-project\n\`\`\`\n\n## Usage\n\n\`\`\`javascript\nimport { greet } from 'my-minimal-project';\ngreet('World');\n\`\`\`\n\n## License\n\nMIT`
-    },
-    {
-        id: 'comprehensive',
-        name: 'Comprehensive Library',
-        description: 'Detailed layout suitable for production packages, containing features lists, badge presets, run environments, and guides.',
+        id: 'enterprise-monorepo',
+        name: 'Enterprise Monorepo',
+        description: 'Massive blueprint designed for large-scale corporate monorepos with multiple packages, deep architecture diagrams, and comprehensive setup guides.',
         icon: <BookOpen className="w-6 h-6 text-blue-500" />,
         content: `<p align="center">
   <img src="https://img.shields.io/badge/Status-Active-green?style=for-the-badge" alt="Active Status" />
   <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="MIT License" />
+  <img src="https://img.shields.io/badge/Coverage-98%25-brightgreen?style=for-the-badge" alt="Coverage" />
+  <img src="https://img.shields.io/badge/Build-Passing-brightgreen?style=for-the-badge" alt="Build Status" />
 </p>
 
-# Awesome App
+# 🏢 Enterprise Core Services Monorepo
 
-The ultimate tool to solve all your modern dev workflows.
+Welcome to the central repository for the Enterprise Core Services architecture. This monorepo utilizes Turborepo and pnpm workspaces to seamlessly manage shared libraries, microservices, and internal UI components.
 
 ---
 
-## Features
+## 🏗️ Architecture Overview
 
-- Lightning fast performance
-- Premium dark/light themes built-in
-- Highly secure and tested
+The codebase is strictly modularized into distinct packages:
 
-## Tech Stack
+| Package | Role | Path | Tech Stack |
+|---------|------|------|------------|
+| \`@core/ui\` | Shared React Component Library | \`/packages/ui\` | React, Tailwind, Storybook |
+| \`@core/auth\` | Authentication Microservice | \`/apps/auth-service\` | Node.js, Express, Redis |
+| \`@core/db\` | Database ORM & Migrations | \`/packages/db\` | Prisma, PostgreSQL |
+| \`@core/web\` | Main Customer Facing Portal | \`/apps/web\` | Next.js, TRPC |
 
-<p>
-  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
-  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind" />
+### Data Flow Pattern
+
+\`\`\`mermaid
+graph TD;
+    Client[Web Client] --> Gateway[API Gateway];
+    Gateway --> Auth[Auth Service];
+    Gateway --> Users[User Service];
+    Auth --> Cache[(Redis Cache)];
+    Users --> DB[(PostgreSQL Master)];
+\`\`\`
+
+## 🚀 Quick Start & Environment Setup
+
+This project requires **Node.js v20+** and **pnpm v8+**.
+
+### 1. Clone & Install
+\`\`\`bash
+git clone https://github.com/company/enterprise-core.git
+cd enterprise-core
+pnpm install
+\`\`\`
+
+### 2. Infrastructure Setup
+You must have Docker running locally to spin up the required databases and caches:
+\`\`\`bash
+cd packages/infrastructure
+docker-compose up -d
+\`\`\`
+
+### 3. Database Initialization
+\`\`\`bash
+pnpm --filter @core/db db:push
+pnpm --filter @core/db db:seed
+\`\`\`
+
+### 4. Run the Development Server
+This will start all applications concurrently utilizing Turbo's pipeline.
+\`\`\`bash
+pnpm run dev
+\`\`\`
+
+## 🔒 Security Guidelines & CI/CD
+
+All pull requests must pass the rigorous CI/CD pipeline which includes:
+1. **ESLint & Prettier** checks on all modified files.
+2. **Jest Unit Tests** achieving a minimum of 90% branch coverage.
+3. **Snyk Security Scans** for dependency vulnerabilities.
+4. **Playwright E2E Tests** running against a staging preview deployment.
+
+## 📄 Licensing & Governance
+Confidential and Proprietary. All rights reserved by Enterprise Inc. Do not distribute without explicit permission.`
+    },
+    {
+        id: 'api-server-pro',
+        name: 'API Server Pro',
+        description: 'Extensive REST and GraphQL API backend template featuring deep endpoint documentation, authentication flows, and deployment configurations.',
+        icon: <CheckCircle className="w-6 h-6 text-green-500" />,
+        content: `# ⚡ High-Performance API Gateway
+
+The primary REST API backend serving millions of requests per day. Built on Go and Fiber for extreme concurrency and low latency.
+
+## 🔧 Prerequisites
+- Go 1.21+
+- PostgreSQL 15+
+- Redis 7+
+
+## 🚀 Installation & Running
+
+\`\`\`bash
+# 1. Download Modules
+go mod download
+
+# 2. Setup Config
+cp config.example.yaml config.yaml
+# Edit config.yaml with your local database credentials
+
+# 3. Start the Server
+go run cmd/server/main.go
+\`\`\`
+
+## 📚 Core API Endpoints
+
+All endpoints are prefixed with \`/api/v1\`. Authentication is required via the \`Authorization: Bearer <token>\` header for all protected routes.
+
+### User Management
+
+| Method | Endpoint | Auth | Description | Parameters |
+|--------|----------|------|-------------|------------|
+| POST | \`/users/register\` | No | Create a new user account | \`email\`, \`password\`, \`name\` |
+| POST | \`/users/login\` | No | Authenticate and retrieve JWT | \`email\`, \`password\` |
+| GET | \`/users/me\` | Yes | Get the currently authenticated user's profile | None |
+| PATCH | \`/users/me\` | Yes | Update user profile details | \`name\`, \`avatar_url\` |
+| DELETE | \`/users/me\` | Yes | Permanently delete account | None |
+
+### Product Catalog
+
+| Method | Endpoint | Auth | Description | Parameters |
+|--------|----------|------|-------------|------------|
+| GET | \`/products\` | No | List available products | \`limit\`, \`offset\`, \`category\` |
+| GET | \`/products/:id\` | No | Get details for a single product | None |
+| POST | \`/products\` | Admin | Create a new product | \`title\`, \`price\`, \`inventory\` |
+
+## 🛡️ Authentication Architecture
+
+The system utilizes stateless JWTs (JSON Web Tokens) with short-lived access tokens (15m) and long-lived, rotating refresh tokens (7d) stored securely in Redis.
+
+\`\`\`mermaid
+sequenceDiagram
+    participant Client
+    participant API
+    participant Redis
+    participant DB
+    
+    Client->>API: POST /users/login {email, password}
+    API->>DB: Verify credentials
+    DB-->>API: Valid user details
+    API->>Redis: Store Refresh Token
+    API-->>Client: Access Token (JWT) + HTTPOnly Cookie (Refresh)
+\`\`\`
+
+## 🐳 Docker Deployment
+
+To build for production environments:
+
+\`\`\`bash
+docker build -t api-gateway:latest -f build/Dockerfile .
+docker run -p 8080:8080 --env-file .env api-gateway:latest
+\`\`\`
+
+## 📝 License
+This project is open-sourced under the Apache 2.0 License.`
+    },
+    {
+        id: 'data-science',
+        name: 'Data Science & ML Pipeline',
+        description: 'Organized outline designed for scientific repositories, papers, ML pipelines, featuring datasets, metrics, and citations.',
+        icon: <GraduationCap className="w-6 h-6 text-amber-500" />,
+        content: `# 🧠 Deep Sparse Convolutional Transformers
+
+Official repository for the paper: *"Optimizing Attention Mechanisms using Sparse Convolutions for Low-Latency Inference"*
+
+This repository contains the complete PyTorch implementation, training scripts, dataset loaders, and pre-trained weights to reproduce the results presented in our publication.
+
+## 📊 Abstract
+
+Traditional Transformer architectures scale quadratically with sequence length, severely bottlenecking deployment on edge devices. By introducing a novel Sparse Convolutional projection layer before the multi-head attention mechanism, we achieve a **45% reduction in FLOPs** while maintaining 99% of the baseline accuracy on the GLUE benchmark.
+
+## 🛠️ Environment Setup
+
+We strictly manage dependencies using Anaconda to ensure CUDA compatibility.
+
+\`\`\`bash
+# Create the isolated environment
+conda create -n sparse_tf python=3.10
+conda activate sparse_tf
+
+# Install PyTorch with CUDA 11.8 support
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+# Install library dependencies
+pip install -r requirements.txt
+\`\`\`
+
+## 📂 Project Structure
+
+\`\`\`text
+├── checkpoints/       # Saved model weights
+├── configs/           # YAML configuration files for experiments
+├── data/              # Dataset loading and preprocessing scripts
+├── models/            # PyTorch network architectures
+│   ├── layers/        # Custom SparseConv modules
+│   └── transformer.py # Core model definition
+├── scripts/           # Slurm scripts for cluster training
+├── train.py           # Main training loop
+└── evaluate.py        # Evaluation metrics generation
+\`\`\`
+
+## 🏋️‍♂️ Training the Model
+
+To train the model from scratch on the WikiText-103 dataset, execute the following command. Note that a GPU with at least 16GB of VRAM is required.
+
+\`\`\`bash
+python train.py \\
+    --config configs/sparse_baseline.yaml \\
+    --batch_size 32 \\
+    --learning_rate 3e-4 \\
+    --epochs 50 \\
+    --wandb_logging True
+\`\`\`
+
+### Distributed Data Parallel (DDP)
+
+For multi-GPU training, use the torchrun utility:
+
+\`\`\`bash
+torchrun --nproc_per_node=4 train.py --config configs/sparse_large.yaml
+\`\`\`
+
+## 📈 Results & Evaluation
+
+| Model | Params (M) | FLOPs (G) | GLUE Score | Inference (ms) |
+|-------|------------|-----------|------------|----------------|
+| Standard T5 | 220 | 14.5 | 88.4 | 145 |
+| **Sparse-T5 (Ours)** | 215 | **8.1** | **88.1** | **82** |
+
+## 📜 Citation
+
+If you find this code or our paper useful in your research, please cite:
+
+\`\`\`bibtex
+@article{sparse_transformers_2026,
+  author = {Smith, J. and Doe, J.},
+  title = {Optimizing Attention Mechanisms using Sparse Convolutions},
+  journal = {Journal of Machine Learning Research},
+  volume = {42},
+  year = {2026}
+}
+\`\`\``
+    },
+    {
+        id: 'open-source',
+        name: 'Open Source Master',
+        description: 'The ultimate template for community-driven open source projects. Includes contribution guidelines, sponsors, and detailed library usage.',
+        icon: <FileText className="w-6 h-6 text-slate-500" />,
+        content: `<p align="center">
+  <img src="https://img.shields.io/github/stars/username/repo?style=social" alt="Stars" />
+  <img src="https://img.shields.io/npm/dw/package-name?style=flat-square" alt="Downloads" />
+  <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square" alt="PRs Welcome" />
 </p>
 
-## Setup & Development
+<h1 align="center">SuperUI Component Library</h1>
 
-Follow these steps to run the application locally:
+<p align="center">
+  <strong>The most accessible, customizable, and lightweight UI library for React.</strong>
+</p>
 
-\`\`\`bash\n# Install dependencies\nnpm install\n\n# Run local dev server\nnpm run dev\n\`\`\`
+## ✨ Features
 
-## Contributing
+- ♿ **Fully Accessible:** Strictly adheres to WAI-ARIA guidelines.
+- 🎨 **Headless & Styled:** Use our beautiful default styles, or bring your own CSS/Tailwind.
+- 📦 **Tree-shakeable:** Zero dependencies and tiny bundle sizes.
+- 🌙 **Dark Mode Native:** First-class support for dynamic color themes.
 
-Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
+## 📦 Installation
 
-## License
+Available via npm, pnpm, and yarn.
 
-This project is licensed under the MIT License.`
-    },
-    {
-        id: 'api-server',
-        name: 'API Reference Server',
-        description: 'Specifically formatted for web services, REST APIs, or microservices, featuring endpoint tables and docker setups.',
-        icon: <CheckCircle className="w-6 h-6 text-green-500" />,
-        content: `# API Server Core\n\nProduction backend service that powers user management, notifications, and telemetry.\n\n## Quick Start\n\n\`\`\`bash\n# Duplicate template env file\ncp .env.example .env\n\n# Startup server\ndocker-compose up -d\n\`\`\`\n\n## Endpoint Documentation\n\n| Method | Endpoint | Description | Response Code |\n|---|---|---|---|\n| GET | \`/api/v1/health\` | Liveness probe | 200 OK |\n| POST | \`/api/v1/auth/login\` | Returns JWT session token | 200 OK / 401 Unauthorized |\n\n## Deployment\n\nDeploy directly to AWS ECS using GitHub Actions workflow config.`
-    },
-    {
-        id: 'portfolio',
-        name: 'Developer Profile Page',
-        description: 'Sleek index card skeleton to act as your Github Profile Readme introduction.',
-        icon: <User className="w-6 h-6 text-purple-500" />,
-        content: `# Hi there, I'm a Software Engineer!\n\nI am passionate about creating tools that automate and enhance software developer environments.\n\n## About Me\n\n- Currently studying Distributed Systems architectures\n- Contributor to several developer tools & open-source formats\n- Let's connect on [LinkedIn](https://linkedin.com)\n\n## Core Languages & Frameworks\n\n<p>\n  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />\n  <img src="https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white" alt="Go" />\n  <img src="https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white" alt="Rust" />\n</p>`
-    },
-    {
-        id: 'academic',
-        name: 'Academic & Research',
-        description: 'Organized outline designed for scientific repositories, papers, ML pipelines, featuring citations.',
-        icon: <GraduationCap className="w-6 h-6 text-amber-500" />,
-        content: `# Deep Learning Training Pipeline\n\nOfficial repository containing raw training data loaders, model definition, and metrics compilation.\n\n## Abstract\n\nThis repository provides a reproducible implementation of our research paper detailing optimization configurations for sparse convolutional transformers.\n\n## Setup Environment\n\n\`\`\`bash\nconda create -n paper python=3.10\nconda activate paper\npip install -r requirements.txt\n\`\`\`\n\n## Training & Evaluation\n\n\`\`\`bash\npython train.py --config configs/transformer_baseline.yaml --epochs 100\n\`\`\`\n\n## Citation\n\n\`\`\`bibtex\n@article{research_paper_2026,\n  author = {Your Name et al.},\n  title = {Sparse Convolutional Transformers},\n  journal = {Journal of AI Research},\n  year = {2026}\n}\n\`\`\``
+\`\`\`bash
+npm install super-ui
+# or
+pnpm add super-ui
+\`\`\`
+
+## 💻 Usage Example
+
+Integrating SuperUI into your application is incredibly simple.
+
+\`\`\`tsx
+import { Button, Modal, useToast } from 'super-ui';
+import 'super-ui/styles.css'; // Optional default styles
+
+export default function App() {
+  const { toast } = useToast();
+
+  return (
+    <div className="app-container">
+      <Button 
+        variant="primary" 
+        onClick={() => toast('Hello World!')}
+      >
+        Click Me!
+      </Button>
+    </div>
+  );
+}
+\`\`\`
+
+## 🛠️ Component API Reference
+
+### \`<Button>\`
+
+The primary call-to-action component.
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| \`variant\` | \`'primary' \| 'secondary' \| 'ghost' \| 'danger'\` | \`'primary'\` | The visual style of the button. |
+| \`size\` | \`'sm' \| 'md' \| 'lg'\` | \`'md'\` | The physical dimensions and padding. |
+| \`isLoading\` | \`boolean\` | \`false\` | Displays a spinner and disables the button. |
+| \`leftIcon\` | \`ReactNode\` | \`undefined\` | Renders an icon before the text. |
+
+## 🤝 Contributing
+
+We love our contributors! Please read our [Contributing Guide](CONTRIBUTING.md) to get started.
+
+1. Fork the repository
+2. Create your feature branch (\`git checkout -b feature/amazing-feature\`)
+3. Commit your changes using conventional commits
+4. Push to the branch (\`git push origin feature/amazing-feature\`)
+5. Open a Pull Request
+
+## ❤️ Sponsors
+
+This project is supported by generous individuals and companies. If you use SuperUI in a commercial project, please consider sponsoring us!
+
+[Become a Sponsor!](https://github.com/sponsors/username)`
     }
 ];
 
