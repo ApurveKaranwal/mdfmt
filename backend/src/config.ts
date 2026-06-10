@@ -4,7 +4,7 @@ dotenv.config();
 
 export const config = {
   port: Number(process.env.PORT ?? 4000),
-  frontendOrigin: process.env.FRONTEND_ORIGIN ?? "https://mdfmt.vercel.app",
+  frontendOrigin: process.env.FRONTEND_ORIGIN ?? "https://mdfmt.apurve.xyz",
   githubToken: process.env.GITHUB_TOKEN,
   groqModel: process.env.GROQ_MODEL ?? "llama-3.3-70b-versatile",
   maxRepoFiles: Number(process.env.MAX_REPO_FILES ?? 220),
