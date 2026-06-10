@@ -48,6 +48,8 @@
   - [Live GitHub-Style Preview](#-live-github-style-preview)
   - [AI Documentation Agent](#-ai-documentation-agent)
   - [Badge Studio](#-badge-studio)
+  - [Diagram Studio](#-diagram-studio)
+  - [GitHub Profile Builder](#-github-profile-builder)
   - [Templates Gallery](#-templates-gallery)
   - [Table of Contents Generator](#-table-of-contents-generator)
   - [Emoji Picker](#-emoji-picker)
@@ -256,6 +258,29 @@ Automatically generates properly formatted badge links with batch insert support
 
 ---
 
+### 🔀 Diagram Studio
+
+Translate your software architecture ideas into visual diagrams using AI and Mermaid.js!
+
+- 🧠 **AI Generation** — Type out your database schema, user flow, or system architecture in plain English, and the LLaMA 3.3-70B model builds the Mermaid syntax.
+- 👁️ **Live Visualizer** — See your diagram render perfectly within the UI, respecting both light and dark mode themes.
+- 💻 **Source Code Access** — Inspect, tweak, and perfect the raw Mermaid code before inserting it.
+- ⚡ **One-Click Insert** — Push the diagram code block straight into your editor draft.
+
+---
+
+### 🧑‍💻 GitHub Profile Builder
+
+Create an impressive `user/user` special GitHub profile README using our step-by-step wizard.
+
+- 📝 **Personal Info** — Add your headline, bio, and personal details.
+- 🔗 **Social Links** — Instantly link your Twitter, LinkedIn, GitHub, and Portfolio.
+- 🛠️ **Tech Stack Grid** — Click to select from popular technologies and auto-generate beautifully aligned badges.
+- 📊 **Dynamic GitHub Stats** — Integrate `github-readme-stats` cards, top languages, and apply beautiful custom themes (Radical, Tokyo Night, Dracula, etc.) instantly.
+- 👁️ **Live Preview** — See the compiled markdown output in real time.
+
+---
+
 ### 📚 Templates Gallery
 
 Pre-built README templates to jumpstart your documentation:
@@ -400,9 +425,11 @@ mdfmt is a **monorepo** with two independent services:
 │  │    ├── EditorPage      │  │  │    └── /api/build-ai           │  │
 │  │    ├── AiGeneratorPage │  │  │        ├── POST /jobs          │  │
 │  │    ├── BadgeStudioPage │  │  │        ├── POST /generate      │  │
-│  │    ├── TemplatesPage   │  │  │        ├── GET  /jobs/:id      │  │
-│  │    ├── SignInPage      │  │  │        ├── POST /jobs/:id/revise│ │
-│  │    └── SignUpPage      │  │  │        └── POST /jobs/:id/approve││
+│  │    ├── DiagramStudioPage│  │  │        ├── GET  /jobs/:id      │  │
+│  │    ├── ProfileBuilderPage│ │  │        ├── POST /jobs/:id/revise│ │
+│  │    ├── TemplatesPage   │  │  │        ├── POST /jobs/:id/approve││
+│  │    ├── SignInPage      │  │  │        └── POST /diagram       │  │
+│  │    └── SignUpPage      │  │  │                                │  │
 │  └────────────────────────┘  │  └────────────────────────────────┘  │
 │                              │                                      │
 │  ┌────────────────────────┐  │  ┌────────────────────────────────┐  │
@@ -644,6 +671,8 @@ mdfmt/
 │       │   ├── 📄 EditorPage.tsx           # Main WYSIWYG editor + split preview
 │       │   ├── 📄 AiGeneratorPage.tsx      # AI documentation generator UI
 │       │   ├── 📄 BadgeStudioPage.tsx      # Badge creation & management
+│       │   ├── 📄 DiagramStudioPage.tsx    # Mermaid.js AI generation
+│       │   ├── 📄 ProfileBuilderPage.tsx   # GitHub profile builder wizard
 │       │   ├── 📄 TemplatesPage.tsx        # Pre-built README templates
 │       │   ├── 📄 SignInPage.tsx           # Sign in (Email + OAuth)
 │       │   └── 📄 SignUpPage.tsx           # Sign up with password strength
