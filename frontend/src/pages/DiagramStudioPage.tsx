@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Workflow, Loader2, Send, CheckCircle2, Code2, Eye } from 'lucide-react';
 import { useThemeStore } from '../store/useThemeStore';
 import { useDraftStore } from '../store/useDraftStore';
@@ -7,7 +6,6 @@ import Navbar from '../components/Navbar';
 import mermaid from 'mermaid';
 
 export default function DiagramStudioPage() {
-    const navigate = useNavigate();
     const { isDarkMode } = useThemeStore();
     const { markdown, setMarkdown } = useDraftStore();
 
