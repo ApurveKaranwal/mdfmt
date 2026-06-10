@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { PenTool, Code2, BookOpen, Layers, Settings, Moon, Sun } from 'lucide-react';
+import { PenTool, Code2, BookOpen, Layers, Settings, Moon, Sun, User, Workflow } from 'lucide-react';
 import { useThemeStore } from '../store/useThemeStore';
 
 export default function Navbar() {
@@ -9,8 +9,10 @@ export default function Navbar() {
     const links = [
         { path: '/', label: 'Editor', icon: <Code2 className="w-3.5 h-3.5" /> },
         { path: '/ai-generator', label: 'AI Agent', icon: <Settings className="w-3.5 h-3.5" /> },
+        { path: '/diagrams', label: 'Diagrams', icon: <Workflow className="w-3.5 h-3.5" /> },
+        { path: '/profile', label: 'Profile UI', icon: <User className="w-3.5 h-3.5" /> },
         { path: '/templates', label: 'Templates', icon: <BookOpen className="w-3.5 h-3.5" /> },
-        { path: '/badge-studio', label: 'Badge Studio', icon: <Layers className="w-3.5 h-3.5" /> }
+        { path: '/badge-studio', label: 'Badges', icon: <Layers className="w-3.5 h-3.5" /> }
     ];
 
     return (
