@@ -74,7 +74,7 @@ export async function generateDocumentationWithAnalysis(
   return {
     readme: docs.readme,
     docs: generatedDocs,
-    summary: `Generated comprehensive README and ${generatedDocs.length} documentation files using in-house custom template from ${repository.files.length} files in ${repository.owner}/${repository.repo}.${groqErrorMsg ? ` (Note: Groq AI failed with error: ${groqErrorMsg})` : ""}`,
+    summary: `Generated documentation using in-house template. DEBUG INFO: groqKey length is ${groqKey ? groqKey.length : 0}. ${groqErrorMsg ? `Groq Error: ${groqErrorMsg}` : "No error thrown, just skipped."}`,
     creatorQuestions: buildCreatorQuestionsFromAnalysis(advancedAnalysis, request),
   };
 }
