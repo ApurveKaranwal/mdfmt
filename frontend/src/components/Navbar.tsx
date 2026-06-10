@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Code2, BookOpen, Layers, Settings, Moon, Sun } from 'lucide-react';
+import { PenTool, BookOpen, Layers, Settings, Moon, Sun } from 'lucide-react';
 import { useThemeStore } from '../store/useThemeStore';
 
 export default function Navbar() {
@@ -18,9 +18,9 @@ export default function Navbar() {
             {/* Logo */}
             <div className="flex items-center space-x-2">
                 <div className="p-1 bg-slate-100 dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700">
-                    <Code2 className="w-4 h-4 text-slate-900 dark:text-slate-100" />
+                    <PenTool className="w-4 h-4 text-slate-900 dark:text-slate-100" />
                 </div>
-                <span className="text-xs font-black tracking-widest text-slate-900 dark:text-slate-50 uppercase">
+                <span className="text-2xl tracking-wide text-slate-900 dark:text-slate-50" style={{ fontFamily: "'Pacifico', cursive", transform: 'translateY(-2px)' }}>
                     mdfmt
                 </span>
             </div>
