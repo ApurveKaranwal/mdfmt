@@ -211,13 +211,13 @@ export default function AiGeneratorPage() {
 
     return (
         <div className={`h-screen flex flex-col ${isDarkMode ? 'dark' : ''}`}>
-            <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 text-slate-950 dark:text-slate-100 transition-colors font-sans antialiased overflow-hidden">
+            <div className="flex flex-col h-screen bg-transparent text-slate-950 dark:text-slate-100 transition-colors font-sans antialiased overflow-hidden">
                 <Navbar />
 
                 <main className="flex-1 flex overflow-hidden p-6 gap-6">
                     {/* Left: Input console panel */}
                     <div className="w-[380px] shrink-0 flex flex-col gap-5">
-                        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm p-5">
+                        <div className="glass-panel rounded-2xl p-5">
                             <div className="mb-5">
                                 <h2 className="text-sm font-bold tracking-widest uppercase text-slate-900 dark:text-slate-100">
                                     AI Readme Agent
@@ -299,7 +299,7 @@ export default function AiGeneratorPage() {
                                 <button
                                     type="submit"
                                     disabled={loading || !!(job && job.status !== 'failed' && job.status !== 'needs_review')}
-                                    className="w-full flex items-center justify-center gap-2 py-2 text-xs font-bold text-white bg-slate-900 dark:bg-slate-100 dark:text-slate-900 hover:bg-slate-850 rounded-xl transition-all disabled:opacity-50 shadow-sm shadow-slate-900/10"
+                                    className="w-full flex items-center justify-center gap-2 py-2 text-xs font-bold text-white bg-slate-900 dark:bg-slate-100 dark:text-slate-900 hover:bg-slate-850 rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:hover:scale-100 shadow-sm shadow-slate-900/10"
                                 >
                                     {loading ? (
                                         <>
@@ -325,7 +325,7 @@ export default function AiGeneratorPage() {
                         </div>
 
                         {/* Recent Jobs History Sidebar section */}
-                        <div className="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm p-5 overflow-hidden flex flex-col">
+                        <div className="flex-1 glass-panel rounded-2xl p-5 overflow-hidden flex flex-col">
                             <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-3 shrink-0">Recent Projects</h3>
                             <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-2">
                                 {recentJobs.length === 0 ? (
@@ -364,7 +364,7 @@ export default function AiGeneratorPage() {
                     </div>
 
                     {/* Right: Workspace result pane */}
-                    <div className="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col min-w-0">
+                    <div className="flex-1 glass-panel rounded-2xl overflow-hidden flex flex-col min-w-0">
                         {error && (
                             <div className="m-5 p-3 flex items-start gap-2.5 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-xl text-red-600 dark:text-red-400 text-xs shrink-0">
                                 <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />

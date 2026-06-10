@@ -88,7 +88,7 @@ export default function BadgeStudioPage() {
 
     return (
         <div className={isDarkMode ? 'dark' : ''}>
-            <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 text-slate-950 dark:text-slate-100 transition-colors font-sans antialiased overflow-hidden">
+            <div className="flex flex-col h-screen bg-transparent text-slate-950 dark:text-slate-100 transition-colors font-sans antialiased overflow-hidden">
                 <Navbar />
 
                 <main className="flex-1 overflow-y-auto p-8 custom-scrollbar">
@@ -105,7 +105,7 @@ export default function BadgeStudioPage() {
                         {/* Layout grids */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {/* Left: Toggles and inputs */}
-                            <div className="md:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 space-y-5">
+                            <div className="md:col-span-2 glass-panel rounded-2xl p-5 space-y-5">
                                 {/* Subtab navigation */}
                                 <div className="flex border-b border-slate-100 dark:border-slate-800 pb-2 gap-4">
                                     {(['custom', 'tech', 'social'] as const).map((tab) => (
@@ -135,7 +135,7 @@ export default function BadgeStudioPage() {
                                                     type="text"
                                                     value={label}
                                                     onChange={(e) => setLabel(e.target.value)}
-                                                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:outline-none focus:border-slate-450 transition-colors"
+                                                    className="w-full px-3 py-2 bg-transparent border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:outline-none focus:border-slate-450 transition-colors"
                                                 />
                                             </div>
                                             <div>
@@ -146,7 +146,7 @@ export default function BadgeStudioPage() {
                                                     type="text"
                                                     value={message}
                                                     onChange={(e) => setMessage(e.target.value)}
-                                                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:outline-none focus:border-slate-450 transition-colors"
+                                                    className="w-full px-3 py-2 bg-transparent border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:outline-none focus:border-slate-450 transition-colors"
                                                 />
                                             </div>
                                         </div>
@@ -162,7 +162,7 @@ export default function BadgeStudioPage() {
                                                         type="text"
                                                         value={color}
                                                         onChange={(e) => setColor(e.target.value)}
-                                                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:outline-none focus:border-slate-450 font-mono transition-colors"
+                                                        className="w-full px-3 py-2 bg-transparent border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:outline-none focus:border-slate-450 font-mono transition-colors"
                                                     />
                                                 </div>
                                             </div>
@@ -173,7 +173,7 @@ export default function BadgeStudioPage() {
                                                 <select
                                                     value={style}
                                                     onChange={(e) => setStyle(e.target.value)}
-                                                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:outline-none focus:border-slate-450 transition-colors"
+                                                    className="w-full px-3 py-2 bg-transparent border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:outline-none focus:border-slate-450 transition-colors"
                                                 >
                                                     {STYLES.map(s => (
                                                         <option key={s} value={s}>{s}</option>
@@ -198,7 +198,7 @@ export default function BadgeStudioPage() {
                                                     <button
                                                         key={tech.name}
                                                         onClick={() => handleInsertToDraft(badgeUrl, tech.name)}
-                                                        className="flex flex-col items-center justify-center p-3 border border-slate-100 dark:border-slate-850 hover:border-slate-300 dark:hover:border-slate-750 bg-slate-50/50 dark:bg-slate-950/20 rounded-xl transition-all gap-1 text-center"
+                                                        className="flex flex-col items-center justify-center p-3 border border-slate-100 dark:border-slate-850 hover:border-slate-300 dark:hover:border-slate-750 bg-transparent rounded-xl transition-all gap-1 text-center"
                                                     >
                                                         <img src={badgeUrl} alt={tech.name} className="h-5 max-w-full object-contain" />
                                                         <span className="text-[9px] text-slate-400 mt-1 uppercase font-semibold">
@@ -222,7 +222,7 @@ export default function BadgeStudioPage() {
                                                 <select
                                                     value={socialPlatform}
                                                     onChange={(e) => setSocialPlatform(e.target.value)}
-                                                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:outline-none focus:border-slate-450 transition-colors"
+                                                    className="w-full px-3 py-2 bg-transparent border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:outline-none focus:border-slate-450 transition-colors"
                                                 >
                                                     {SOCIAL_CHANNELS.map(sc => (
                                                         <option key={sc.name} value={sc.name}>{sc.name}</option>
@@ -237,7 +237,7 @@ export default function BadgeStudioPage() {
                                                     type="text"
                                                     value={socialHandle}
                                                     onChange={(e) => setSocialHandle(e.target.value)}
-                                                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:outline-none focus:border-slate-450 transition-colors"
+                                                    className="w-full px-3 py-2 bg-transparent border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:outline-none focus:border-slate-450 transition-colors"
                                                 />
                                             </div>
                                         </div>
@@ -246,12 +246,12 @@ export default function BadgeStudioPage() {
                             </div>
 
                             {/* Right: Live Preview & integration block */}
-                            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 flex flex-col justify-between h-fit">
+                            <div className="glass-panel rounded-2xl p-5 flex flex-col justify-between h-fit">
                                 <div className="space-y-4">
                                     <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                                         <Eye className="w-3.5 h-3.5" /> Shield Preview
                                     </h3>
-                                    <div className="p-6 bg-slate-50 dark:bg-slate-950/60 border border-slate-100 dark:border-slate-850 rounded-xl flex items-center justify-center min-h-[90px]">
+                                    <div className="p-6 bg-transparent dark:bg-slate-950/60 border border-slate-100 dark:border-slate-850 rounded-xl flex items-center justify-center min-h-[90px]">
                                         <img
                                             src={activeTab === 'custom' ? getCustomUrl() : activeTab === 'social' ? getSocialUrl() : `https://img.shields.io/badge/TechStack-Grid-blue?style=for-the-badge`}
                                             alt="live badge preview"

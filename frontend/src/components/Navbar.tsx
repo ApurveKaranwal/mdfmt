@@ -14,7 +14,7 @@ export default function Navbar() {
     ];
 
     return (
-        <header className="flex items-center justify-between px-6 py-3 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shrink-0 select-none z-30">
+        <header className="glass-header flex items-center justify-between px-6 py-3 shrink-0 select-none z-30 sticky top-0">
             {/* Logo */}
             <div className="flex items-center space-x-2">
                 <div className="p-1 bg-slate-100 dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700">
@@ -33,10 +33,10 @@ export default function Navbar() {
                         <Link
                             key={link.path}
                             to={link.path}
-                            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-300 hover:-translate-y-0.5 ${
                                 isActive
-                                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700'
-                                    : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/40'
+                                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/40 hover:shadow-sm'
                             }`}
                         >
                             {link.icon}

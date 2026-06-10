@@ -212,7 +212,7 @@ const EditorPage = () => {
 
   return (
     <div className={isDarkMode ? 'dark' : ''}>
-      <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 text-slate-950 dark:text-slate-100 transition-colors font-sans antialiased overflow-hidden">
+      <div className="flex flex-col h-screen bg-transparent text-slate-950 dark:text-slate-100 transition-colors font-sans antialiased overflow-hidden">
         <Navbar />
 
         {/* Sub-header actions */}

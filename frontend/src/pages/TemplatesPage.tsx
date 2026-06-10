@@ -378,7 +378,7 @@ export default function TemplatesPage() {
 
     return (
         <div className={isDarkMode ? 'dark' : ''}>
-            <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 text-slate-950 dark:text-slate-100 transition-colors font-sans antialiased overflow-hidden">
+            <div className="flex flex-col h-screen bg-transparent text-slate-950 dark:text-slate-100 transition-colors font-sans antialiased overflow-hidden">
                 <Navbar />
 
                 <main className="flex-1 overflow-y-auto p-8 custom-scrollbar">
@@ -396,7 +396,7 @@ export default function TemplatesPage() {
                             {TEMPLATES.map((tpl) => (
                                 <div
                                     key={tpl.id}
-                                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 hover:border-slate-400 dark:hover:border-slate-700 transition-all flex flex-col justify-between"
+                                    className="glass-panel rounded-2xl p-5 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
                                 >
                                     <div className="space-y-3">
                                         <div className="flex items-center gap-3">
