@@ -491,8 +491,8 @@ export default function TemplatesPage() {
             <div className="flex flex-col h-screen bg-transparent text-slate-950 dark:text-slate-100 transition-colors font-sans antialiased overflow-hidden">
                 <Navbar />
 
-                <main className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-                    <div className="max-w-4xl mx-auto space-y-6">
+                <main className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
+                    <div className="max-w-4xl mx-auto space-y-4 md:space-y-6">
                         <div>
                             <h2 className="text-sm font-bold tracking-widest uppercase text-slate-900 dark:text-slate-100">
                                 Markdown Blueprint Center

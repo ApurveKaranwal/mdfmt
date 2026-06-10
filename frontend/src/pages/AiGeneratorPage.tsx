@@ -175,10 +175,10 @@ export default function AiGeneratorPage() {
             <div className="flex flex-col h-screen bg-transparent text-slate-950 dark:text-slate-100 transition-colors font-sans antialiased overflow-hidden">
                 <Navbar />
 
-                <main className="flex-1 flex overflow-hidden p-6 gap-6">
+                <main className="flex-1 flex flex-col lg:flex-row overflow-hidden p-4 md:p-6 gap-4 md:gap-6">
                     {/* Left: Input console panel */}
-                    <div className="w-[380px] shrink-0 flex flex-col gap-5">
-                        <div className="glass-panel rounded-2xl p-5">
+                    <div className="w-full lg:w-[380px] shrink-0 flex flex-col gap-4 md:gap-5 overflow-y-auto lg:overflow-hidden custom-scrollbar">
+                        <div className="glass-panel rounded-2xl p-5 shrink-0">
                             <div className="mb-5">
                                 <h2 className="text-sm font-bold tracking-widest uppercase text-slate-900 dark:text-slate-100">
                                     AI Readme Agent

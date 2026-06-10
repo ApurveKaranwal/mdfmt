@@ -216,8 +216,8 @@ const EditorPage = () => {
         <Navbar />
 
         {/* Sub-header actions */}
-        <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-2.5 flex items-center justify-between z-10 shrink-0">
-          <div className="flex items-center gap-1.5">
+        <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 md:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2 z-10 shrink-0">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <button
               onClick={() => setShowOutline(!showOutline)}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all ${
@@ -290,10 +290,10 @@ const EditorPage = () => {
         </div>
 
         {/* Workspace */}
-        <main className="flex-1 flex overflow-hidden p-6 gap-6">
+        <main className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden p-4 md:p-6 gap-4 md:gap-6 custom-scrollbar">
           {/* Collapsible Outline Pane */}
           {showOutline && (
-            <div className="w-64 shrink-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 overflow-y-auto custom-scrollbar animate-modal-in">
+            <div className="w-full md:w-64 shrink-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 overflow-y-auto custom-scrollbar animate-modal-in max-h-[300px] md:max-h-none">
               <div className="flex items-center gap-2 pb-2.5 border-b border-slate-100 dark:border-slate-850 mb-3">
                 <BookOpen className="w-4.5 h-4.5 text-slate-650" />
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100">
