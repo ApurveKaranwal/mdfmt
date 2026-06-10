@@ -25,8 +25,7 @@ async function callGroqLLM(systemPrompt: string, userPrompt: string, apiKey: str
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt }
     ],
-    temperature: 0.2,
-    max_tokens: 8000,
+    temperature: 0.2
   };
 
   const response = await fetch(url, {

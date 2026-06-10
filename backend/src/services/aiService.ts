@@ -22,12 +22,15 @@ export async function generateDocumentationWithAnalysis(
   // Check if a Groq API Key is available (either from user request or global config)
   const groqKey = request.groqApiKey || config.groqApiKey;
 
+  let groqErrorMsg = "";
+
   if (groqKey) {
     try {
       console.log("Groq API Key detected. Routing to Llama 3 LLM...");
       return await generateDocumentationWithGroq(request, repository, advancedAnalysis, groqKey);
-    } catch (e) {
+    } catch (e: any) {
       console.error("Groq generation failed. Falling back to template writer.", e);
+      groqErrorMsg = e.message || "Unknown error";
     }
   }
 
@@ -71,7 +74,7 @@ export async function generateDocumentationWithAnalysis(
   return {
     readme: docs.readme,
     docs: generatedDocs,
-    summary: `Generated comprehensive README and ${generatedDocs.length} documentation files using in-house custom template from ${repository.files.length} files in ${repository.owner}/${repository.repo}.`,
+    summary: `Generated comprehensive README and ${generatedDocs.length} documentation files using in-house custom template from ${repository.files.length} files in ${repository.owner}/${repository.repo}.${groqErrorMsg ? ` (Note: Groq AI failed with error: ${groqErrorMsg})` : ""}`,
     creatorQuestions: buildCreatorQuestionsFromAnalysis(advancedAnalysis, request),
   };
 }
