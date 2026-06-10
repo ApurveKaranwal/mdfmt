@@ -1,7 +1,9 @@
+import { config } from "../config";
 import type { BuildAiRequest, GeneratedDocumentation, RepositorySnapshot } from "../types";
 import { generateDocumentation as customGenerateDocumentation } from "./customDocWriter";
 import { performAdvancedAnalysis } from "./advancedAnalysis";
 import { initMLEngine } from "./mlEngine";
+import { generateDocumentationWithGroq } from "./groqService";
 
 // ---------------------------------------------------------------------------
 // Public API
@@ -15,8 +17,21 @@ export async function generateDocumentationWithAnalysis(
   await initMLEngine();
 
   // Perform advanced analysis using ML
-  const advancedAnalysis = await performAdvancedAnalysis(repository, request.projectName);
+  const advancedAnalysis = await performAdvancedAnalysis(repository, request.projectName || repository.repo);
 
+  // Check if a Groq API Key is available (either from user request or global config)
+  const groqKey = request.groqApiKey || config.groqApiKey;
+
+  if (groqKey) {
+    try {
+      console.log("Groq API Key detected. Routing to Llama 3 LLM...");
+      return await generateDocumentationWithGroq(request, repository, advancedAnalysis, groqKey);
+    } catch (e) {
+      console.error("Groq generation failed. Falling back to template writer.", e);
+    }
+  }
+
+  console.log("No Groq API Key or Groq failed. Using fallback template writer...");
   // Generate all documentation using custom writer (no external dependencies)
   const docs = customGenerateDocumentation(
     request.projectName || repository.repo,
@@ -56,7 +71,7 @@ export async function generateDocumentationWithAnalysis(
   return {
     readme: docs.readme,
     docs: generatedDocs,
-    summary: `Generated comprehensive README and ${generatedDocs.length} documentation files using in-house custom model from ${repository.files.length} files in ${repository.owner}/${repository.repo}. No external dependencies required.`,
+    summary: `Generated comprehensive README and ${generatedDocs.length} documentation files using in-house custom template from ${repository.files.length} files in ${repository.owner}/${repository.repo}.`,
     creatorQuestions: buildCreatorQuestionsFromAnalysis(advancedAnalysis, request),
   };
 }

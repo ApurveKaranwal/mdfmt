@@ -111,8 +111,10 @@ async function runGenerationJob(jobId: string) {
 
 function parseBuildRequest(body: unknown): BuildAiRequest {
   const payload = body as Partial<BuildAiRequest> | undefined;
-  const projectName = assertValidString(payload?.projectName, "projectName", 120);
   const githubUrl = assertValidString(payload?.githubUrl, "githubUrl", 300);
+  const projectName = typeof payload?.projectName === "string" && payload.projectName.trim() 
+    ? payload.projectName.trim() 
+    : githubUrl.split('/').pop()?.replace('.git', '') || "Project";
   const instructions =
     typeof payload?.instructions === "string" && payload.instructions.trim()
       ? payload.instructions.trim().slice(0, 4000)

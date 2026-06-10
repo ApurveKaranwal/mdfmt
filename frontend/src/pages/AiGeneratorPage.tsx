@@ -44,7 +44,6 @@ export default function AiGeneratorPage() {
     const { setMarkdown, setHtmlContent } = useDraftStore();
 
     // Form inputs
-    const [projectName, setProjectName] = useState('');
     const [githubUrl, setGithubUrl] = useState('');
     const [instructions, setInstructions] = useState('');
     const [depth, setDepth] = useState<'readme-only' | 'standard' | 'complete'>('standard');
@@ -118,7 +117,6 @@ export default function AiGeneratorPage() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    projectName,
                     githubUrl,
                     instructions,
                     documentationDepth: depth
@@ -228,20 +226,7 @@ export default function AiGeneratorPage() {
                             </div>
 
                             <form onSubmit={handleCreateJob} className="space-y-4">
-                                <div>
-                                    <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider block mb-1">
-                                        Project Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={projectName}
-                                        onChange={(e) => setProjectName(e.target.value)}
-                                        placeholder="e.g. mdfmt"
-                                        required
-                                        disabled={!!(job && job.status !== 'failed' && job.status !== 'needs_review')}
-                                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:outline-none focus:border-slate-400 dark:focus:border-slate-700 transition-colors disabled:opacity-60"
-                                    />
-                                </div>
+
 
                                 <div>
                                     <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider block mb-1">
@@ -343,7 +328,7 @@ export default function AiGeneratorPage() {
                                         >
                                             <div className="flex items-center justify-between">
                                                 <span className="font-semibold text-xs text-slate-900 dark:text-white truncate max-w-[180px]">
-                                                    {pastJob.request.projectName}
+                                                    {pastJob.request.projectName || pastJob.request.githubUrl.split('/').pop()}
                                                 </span>
                                                 <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase ${
                                                     pastJob.status === 'needs_review' || pastJob.status === 'approved' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' :

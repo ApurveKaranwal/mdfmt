@@ -7,6 +7,7 @@ export const config = {
   frontendOrigin: process.env.FRONTEND_ORIGIN ?? "https://mdfmt.apurve.xyz",
   githubToken: process.env.GITHUB_TOKEN,
   groqModel: process.env.GROQ_MODEL ?? "llama-3.3-70b-versatile",
+  groqApiKey: process.env.GROQ_API_KEY,
   maxRepoFiles: Number(process.env.MAX_REPO_FILES ?? 220),
   maxRepoBytes: Number(process.env.MAX_REPO_BYTES ?? 260000),
   maxFileBytes: Number(process.env.MAX_FILE_BYTES ?? 12000),
