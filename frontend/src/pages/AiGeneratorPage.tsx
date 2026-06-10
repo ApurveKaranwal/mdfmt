@@ -273,24 +273,29 @@ export default function AiGeneratorPage() {
                         </div>
 
                         {/* Recent Jobs History Sidebar section */}
-                        <div className="flex-1 glass-panel rounded-2xl p-5 overflow-hidden flex flex-col">
-                            <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-3 shrink-0">Recent Projects</h3>
-                            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-2">
+                        <div className="flex-1 glass-panel rounded-2xl p-5 overflow-hidden flex flex-col min-h-[300px]">
+                            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 mb-4 shrink-0 flex items-center gap-2">
+                                <FileText className="w-4 h-4 text-slate-500" /> Recent Projects
+                            </h3>
+                            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3">
                                 {recentJobs.length === 0 ? (
-                                    <p className="text-[11px] text-slate-400 italic">No past jobs saved.</p>
+                                    <div className="text-center p-6 bg-slate-50/50 dark:bg-slate-900/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
+                                        <p className="text-xs text-slate-500 font-medium">No past projects found.</p>
+                                        <p className="text-[10px] text-slate-400 mt-1">Generate documentation to see it here.</p>
+                                    </div>
                                 ) : (
                                     recentJobs.map(pastJob => (
                                         <button
                                             key={pastJob.id}
                                             onClick={() => setJob(pastJob)}
-                                            className={`w-full text-left p-3 rounded-xl border transition-all ${
+                                            className={`w-full text-left p-4 rounded-xl border transition-all hover:-translate-y-0.5 hover:shadow-md ${
                                                 job?.id === pastJob.id 
-                                                    ? 'bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600' 
-                                                    : 'bg-transparent border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                                                    ? 'bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-500 shadow-sm' 
+                                                    : 'bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                                             }`}
                                         >
-                                            <div className="flex items-center justify-between">
-                                                <span className="font-semibold text-xs text-slate-900 dark:text-white truncate max-w-[180px]">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <span className="font-bold text-sm text-slate-900 dark:text-white truncate max-w-[180px]">
                                                     {pastJob.request.projectName || pastJob.request.githubUrl.split('/').pop()}
                                                 </span>
                                                 <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase ${
