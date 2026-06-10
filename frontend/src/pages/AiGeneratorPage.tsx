@@ -10,8 +10,6 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Navbar from '../components/Navbar';
 import { markdownToHtml } from '../lib/markdownParser';
-import { Sparkles } from 'lucide-react';
-
 interface Job {
     id: string;
     status: 'scraping' | 'generating' | 'needs_review' | 'failed' | 'revising' | 'approved';
@@ -55,8 +53,6 @@ export default function AiGeneratorPage() {
     const [revisionFeedback, setRevisionFeedback] = useState('');
     const [revising, setRevising] = useState(false);
 
-    // In-browser local AI Worker
-    const [magicAiState, setMagicAiState] = useState<{ loading: boolean; progress?: any; error?: string }>({ loading: false });
 
     // UI State
     const [activeTab, setActiveTab] = useState<'ai' | 'raw'>('ai');
@@ -173,39 +169,6 @@ export default function AiGeneratorPage() {
         navigate('/');
     };
 
-    const handleMagicAiExpand = () => {
-        if (!job?.result) return;
-        setMagicAiState({ loading: true });
-
-        const worker = new Worker(new URL('../lib/aiWorker.ts', import.meta.url), {
-            type: 'module'
-        });
-
-        worker.postMessage({ text: job.result.readme.slice(0, 300) }); // Send a smaller chunk to prevent OOM
-
-        worker.addEventListener('message', (event) => {
-            const { status, result, error } = event.data;
-
-            if (status === 'progress') {
-                // Ignore rapid progress updates to prevent React from crashing
-                // setMagicAiState({ loading: true, progress });
-            } else if (status === 'complete') {
-                const newReadme = job.result!.readme + '\n\n### AI Expanded Details\n\n' + result;
-                setJob({
-                    ...job,
-                    result: {
-                        ...job.result!,
-                        readme: newReadme
-                    }
-                });
-                setMagicAiState({ loading: false });
-                worker.terminate();
-            } else if (status === 'error') {
-                setMagicAiState({ loading: false, error });
-                worker.terminate();
-            }
-        });
-    };
 
     return (
         <div className={`h-screen flex flex-col ${isDarkMode ? 'dark' : ''}`}>
@@ -497,28 +460,7 @@ export default function AiGeneratorPage() {
                                                 </button>
                                             </form>
 
-                                            {/* Magic AI Button */}
-                                            <div className="mt-6 border-t border-slate-150 dark:border-slate-800 pt-4">
-                                                <h4 className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
-                                                    <Sparkles className="w-3 h-3 text-purple-500" /> WebGPU Local AI
-                                                </h4>
-                                                <button
-                                                    onClick={handleMagicAiExpand}
-                                                    disabled={magicAiState.loading}
-                                                    className="w-full py-2 text-[11px] font-bold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 rounded-xl transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-1.5"
-                                                >
-                                                    {magicAiState.loading ? (
-                                                        <>
-                                                            <Loader2 className="w-3 h-3 animate-spin" /> First run? Downloading Model (~300MB)...
-                                                        </>
-                                                    ) : (
-                                                        <>Magic Expand Section</>
-                                                    )}
-                                                </button>
-                                                {magicAiState.error && (
-                                                    <p className="text-[9px] text-red-500 mt-2">{magicAiState.error}</p>
-                                                )}
-                                            </div>
+
                                                     </div>
                                                 </>
                                             ) : (
