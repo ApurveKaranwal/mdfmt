@@ -1,5 +1,5 @@
 import type { RepositorySnapshot, RepositoryFile } from "../types";
-import { classifyTextWithDeepLearning, extractKeywords, predictEndpointDescription, generateProjectSummary } from "./mlEngine";
+import { extractKeywords, predictEndpointDescription } from "./mlEngine";
 
 // ================================================================================
 // ADVANCED REPOSITORY ANALYSIS - FOR GENERATING IN-DEPTH DOCUMENTATION
@@ -73,9 +73,8 @@ export async function performAdvancedAnalysis(repository: RepositorySnapshot, pr
 
   const databaseType = detectDatabaseType(repository);
   
-  // Create a context string out of core features and technologies for the abstractive summarization model
   const contextText = [...coreFeatures, ...repository.detectedStack, databaseType || ""].join(". ");
-  const projectSummary = await generateProjectSummary(contextText, projectName);
+  const projectSummary = `**${projectName}** is an advanced application leveraging modern scalable design patterns.`;
 
   return {
     apiEndpoints: extractApiEndpoints(repository),
@@ -640,18 +639,7 @@ async function detectDesignPatterns(repository: RepositorySnapshot): Promise<str
   if (/class\s+\w+\s*extends/i.test(content)) patterns.add("Class-based Inheritance");
   if (/mixin|composition\s*over\s*inheritance/i.test(content)) patterns.add("Component Composition");
 
-  // Augment with Deep Learning Zero-Shot classification
-  const aiDetected = await classifyTextWithDeepLearning(content, [
-    "Repository Pattern",
-    "MVC Pattern",
-    "Dependency Injection",
-    "Event Sourcing",
-    "Factory Pattern"
-  ]);
 
-  for (const aiPattern of aiDetected) {
-     patterns.add(aiPattern);
-  }
 
   return Array.from(patterns).slice(0, 10);
 }

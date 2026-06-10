@@ -2,8 +2,7 @@ import natural from "natural";
 import nlp from "compromise";
 
 let classifier: natural.BayesClassifier | null = null;
-let nlpPipeline: any = null;
-let summarizationPipeline: any = null;
+
 
 // Initialize ML environment
 export async function initMLEngine() {
@@ -27,23 +26,6 @@ export async function initMLEngine() {
     classifier.train();
   }
 
-  if (!nlpPipeline) {
-    try {
-      // Safely import ESM module from CommonJS
-      // const transformersImport = new Function("return import('@huggingface/transformers')");
-      // const { pipeline } = await transformersImport();
-      
-      // Disabled local transformers due to Render memory limits (512MB limit)
-      // Loading these ONNX models will crash the container.
-      // We will rely on the lightweight NLP heuristics fallback instead.
-      console.log("Local deep learning models disabled to conserve memory. Using heuristics fallback.");
-      
-      // nlpPipeline = await pipeline('zero-shot-classification', 'Xenova/mobilebert-uncased-mnli');
-      // summarizationPipeline = await pipeline('summarization', 'Xenova/distilbart-cnn-6-6');
-    } catch (e) {
-      console.error("Failed to load Hugging Face Transformers locally. Falling back to NLP heuristics.", e);
-    }
-  }
 }
 
 // Predict Endpoint Description using Local Naive Bayes
@@ -83,49 +65,7 @@ export function extractKeywords(text: string, maxKeywords = 10): string[] {
   return terms.slice(0, maxKeywords);
 }
 
-// Advanced Zero-Shot Classification for Architecture using Deep Learning
-export async function classifyTextWithDeepLearning(content: string, labels: string[]): Promise<string[]> {
-  if (!nlpPipeline) return [];
-  
-  try {
-    // Truncate content to avoid memory issues (MobileBERT handles max 512 tokens usually)
-    const snippet = content.slice(0, 1000); 
-    const result = await nlpPipeline(snippet, labels);
-    
-    const matched = [];
-    for (let i = 0; i < result.scores.length; i++) {
-      if (result.scores[i] > 0.3) {
-         matched.push(result.labels[i]);
-      }
-    }
-    return matched;
-  } catch(e) {
-    return [];
-  }
-}
 
-// Generate Abstractive Summary of the Project using Deep Learning
-export async function generateProjectSummary(contextText: string, projectName: string): Promise<string> {
-  if (!summarizationPipeline || !contextText.trim()) {
-    return `**${projectName}** is an advanced application built with modern scalable design patterns.`;
-  }
-
-  try {
-    const prompt = `Describe a software project named ${projectName} that features: ${contextText.slice(0, 800)}. This project is`;
-    const result = await summarizationPipeline(prompt, {
-      max_new_tokens: 60,
-      min_length: 20,
-    });
-    
-    if (result && result.length > 0 && result[0].summary_text) {
-      return `**${projectName}** ${result[0].summary_text.trim()}`;
-    }
-  } catch (e) {
-    console.error("Summarization failed", e);
-  }
-  
-  return `**${projectName}** is an advanced application leveraging modern scalable design patterns.`;
-}
 
 // Grammar Polish using local compromise NLP
 export function polishText(text: string): string {
