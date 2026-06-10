@@ -30,14 +30,16 @@ export async function initMLEngine() {
   if (!nlpPipeline) {
     try {
       // Safely import ESM module from CommonJS
-      const transformersImport = new Function("return import('@huggingface/transformers')");
-      const { pipeline } = await transformersImport();
+      // const transformersImport = new Function("return import('@huggingface/transformers')");
+      // const { pipeline } = await transformersImport();
       
-      // Initialize a tiny Zero-Shot Classification model (runs locally via WebAssembly)
-      console.log("Loading local AIML models (may take a moment on first run)...");
-      nlpPipeline = await pipeline('zero-shot-classification', 'Xenova/mobilebert-uncased-mnli');
-      summarizationPipeline = await pipeline('summarization', 'Xenova/distilbart-cnn-6-6');
-      console.log("AIML Engine Initialized Successfully.");
+      // Disabled local transformers due to Render memory limits (512MB limit)
+      // Loading these ONNX models will crash the container.
+      // We will rely on the lightweight NLP heuristics fallback instead.
+      console.log("Local deep learning models disabled to conserve memory. Using heuristics fallback.");
+      
+      // nlpPipeline = await pipeline('zero-shot-classification', 'Xenova/mobilebert-uncased-mnli');
+      // summarizationPipeline = await pipeline('summarization', 'Xenova/distilbart-cnn-6-6');
     } catch (e) {
       console.error("Failed to load Hugging Face Transformers locally. Falling back to NLP heuristics.", e);
     }
