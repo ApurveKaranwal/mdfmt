@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-    FileText, CheckCircle, BookOpen,
-    GraduationCap, Copy, ArrowRight
+    Copy, ArrowRight, Building2, Server, 
+    BrainCircuit, Globe2, Terminal, UserSquare2
 } from 'lucide-react';
 import { useDraftStore } from '../store/useDraftStore';
 import { useThemeStore } from '../store/useThemeStore';
@@ -22,7 +22,7 @@ const TEMPLATES: Template[] = [
         id: 'enterprise-monorepo',
         name: 'Enterprise Monorepo',
         description: 'Massive blueprint designed for large-scale corporate monorepos with multiple packages, deep architecture diagrams, and comprehensive setup guides.',
-        icon: <BookOpen className="w-6 h-6 text-blue-500" />,
+        icon: <Building2 className="w-6 h-6 text-blue-500" />,
         content: `<p align="center">
   <img src="https://img.shields.io/badge/Status-Active-green?style=for-the-badge" alt="Active Status" />
   <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="MIT License" />
@@ -103,7 +103,7 @@ Confidential and Proprietary. All rights reserved by Enterprise Inc. Do not dist
         id: 'api-server-pro',
         name: 'API Server Pro',
         description: 'Extensive REST and GraphQL API backend template featuring deep endpoint documentation, authentication flows, and deployment configurations.',
-        icon: <CheckCircle className="w-6 h-6 text-green-500" />,
+        icon: <Server className="w-6 h-6 text-green-500" />,
         content: `# ⚡ High-Performance API Gateway
 
 The primary REST API backend serving millions of requests per day. Built on Go and Fiber for extreme concurrency and low latency.
@@ -183,7 +183,7 @@ This project is open-sourced under the Apache 2.0 License.`
         id: 'data-science',
         name: 'Data Science & ML Pipeline',
         description: 'Organized outline designed for scientific repositories, papers, ML pipelines, featuring datasets, metrics, and citations.',
-        icon: <GraduationCap className="w-6 h-6 text-amber-500" />,
+        icon: <BrainCircuit className="w-6 h-6 text-amber-500" />,
         content: `# 🧠 Deep Sparse Convolutional Transformers
 
 Official repository for the paper: *"Optimizing Attention Mechanisms using Sparse Convolutions for Low-Latency Inference"*
@@ -270,7 +270,7 @@ If you find this code or our paper useful in your research, please cite:
         id: 'open-source',
         name: 'Open Source Master',
         description: 'The ultimate template for community-driven open source projects. Includes contribution guidelines, sponsors, and detailed library usage.',
-        icon: <FileText className="w-6 h-6 text-slate-500" />,
+        icon: <Globe2 className="w-6 h-6 text-indigo-500" />,
         content: `<p align="center">
   <img src="https://img.shields.io/github/stars/username/repo?style=social" alt="Stars" />
   <img src="https://img.shields.io/npm/dw/package-name?style=flat-square" alt="Downloads" />
@@ -352,6 +352,116 @@ We love our contributors! Please read our [Contributing Guide](CONTRIBUTING.md) 
 This project is supported by generous individuals and companies. If you use SuperUI in a commercial project, please consider sponsoring us!
 
 [Become a Sponsor!](https://github.com/sponsors/username)`
+    },
+    {
+        id: 'cli-tool',
+        name: 'Command Line Tool',
+        description: 'A crisp, no-nonsense template tailored for CLI applications, featuring install scripts, flags documentation, and animated terminal demos.',
+        icon: <Terminal className="w-6 h-6 text-pink-500" />,
+        content: `# 🚀 turbo-fetch
+
+A ridiculously fast, concurrent HTTP benchmarking and data extraction CLI tool built in Rust.
+
+![Demo](https://via.placeholder.com/800x400.png?text=Terminal+GIF+Demo)
+
+## ⚡ Quick Install
+
+**Mac / Linux (Homebrew):**
+\`\`\`bash
+brew tap username/turbo-fetch
+brew install turbo-fetch
+\`\`\`
+
+**Windows (Scoop):**
+\`\`\`bash
+scoop bucket add username https://github.com/username/scoop-bucket.git
+scoop install turbo-fetch
+\`\`\`
+
+**Cargo (Cross-platform):**
+\`\`\`bash
+cargo install turbo-fetch
+\`\`\`
+
+## 💻 Usage
+
+Run a simple benchmark with 100 concurrent connections:
+\`\`\`bash
+tf --url https://api.example.com --concurrency 100 --requests 1000
+\`\`\`
+
+Extract JSON payloads to a local file:
+\`\`\`bash
+tf --url https://api.example.com/data --extract ".data.users" --output users.json
+\`\`\`
+
+### 🚩 Available Flags
+
+| Flag | Short | Default | Description |
+|------|-------|---------|-------------|
+| \`--url\` | \`-u\` | REQUIRED | The target URL to fetch |
+| \`--concurrency\` | \`-c\` | \`10\` | Number of concurrent workers |
+| \`--requests\` | \`-n\` | \`1\` | Total number of requests to execute |
+| \`--extract\` | \`-e\` | \`""\` | jq-style query to extract JSON data |
+| \`--output\` | \`-o\` | \`stdout\` | Output file path |
+| \`--headers\` | \`-H\` | \`""\` | Custom HTTP headers (e.g. \`"Auth: Bearer token"\`) |
+
+## 🛠️ Build from Source
+
+\`\`\`bash
+git clone https://github.com/username/turbo-fetch.git
+cd turbo-fetch
+cargo build --release
+./target/release/tf --version
+\`\`\`
+
+## 📝 License
+
+MIT License. See \`LICENSE\` for more details.
+`
+    },
+    {
+        id: 'portfolio',
+        name: 'Personal Portfolio',
+        description: 'Clean personal profile README for your GitHub profile with tech stacks, social links, and current projects.',
+        icon: <UserSquare2 className="w-6 h-6 text-teal-500" />,
+        content: `### Hi there, I'm Alex 👋
+
+I'm a Full-Stack Developer passionate about building accessible web applications and scaling distributed systems. Currently working at **TechCorp**, helping build the future of cloud computing.
+
+<p align="left">
+  <a href="https://twitter.com/alexdev"><img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter"/></a>
+  <a href="https://linkedin.com/in/alexdev"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/></a>
+  <a href="https://alexdev.io"><img src="https://img.shields.io/badge/Portfolio-2563EB?style=for-the-badge&logo=react&logoColor=white" alt="Portfolio"/></a>
+</p>
+
+---
+
+### 💻 Tech Stack
+
+- **Frontend:** React, Next.js, TypeScript, TailwindCSS
+- **Backend:** Node.js, Go, Express, GraphQL
+- **Database:** PostgreSQL, MongoDB, Redis
+- **DevOps:** Docker, AWS (EC2, S3, RDS), GitHub Actions
+
+### 🚀 Currently Working On
+
+- 🔭 Building a high-performance open-source HTTP client in Rust.
+- 🌱 Learning WebAssembly and WebGL for interactive 3D experiences.
+- 👯 Looking to collaborate on tools that improve developer productivity.
+- 💬 Ask me about **React Architecture** or **Database Optimization**.
+
+### 📈 GitHub Stats
+
+<p align="center">
+  <img src="https://github-readme-stats.vercel.app/api?username=YOUR_USERNAME&show_icons=true&theme=dracula" alt="GitHub Stats" width="48%"/>
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=YOUR_USERNAME&layout=compact&theme=dracula" alt="Top Languages" width="48%"/>
+</p>
+
+### 📫 Contact Me
+
+Drop me an email at **hello@alexdev.io** if you want to chat about a project or just say hi!
+`
     }
 ];
 
