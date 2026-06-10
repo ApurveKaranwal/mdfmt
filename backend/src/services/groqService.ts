@@ -109,3 +109,22 @@ export async function generateDocumentationWithGroq(
     creatorQuestions: [], // Could be populated by asking the LLM to generate questions in a separate call
   };
 }
+
+export async function generateDiagramWithGroq(
+  prompt: string,
+  apiKey: string
+): Promise<string> {
+  const systemPrompt = `You are an expert software architect and Mermaid.js specialist.
+Your task is to take a user's plain-English description of an architecture, workflow, or system and translate it strictly into Mermaid.js syntax.
+
+RULES:
+1. ONLY output the raw Mermaid.js markdown block.
+2. DO NOT include any surrounding text, explanations, or conversational filler like "Here is your diagram".
+3. Use a markdown fenced code block with \`\`\`mermaid.
+4. Make the diagrams beautiful, well-structured, and use standard Mermaid diagram types (graph TD, sequenceDiagram, etc).
+5. If the user doesn't specify a type, default to a top-down flowchart (graph TD) or left-to-right (graph LR).`;
+
+  const userPrompt = `Generate a Mermaid diagram for the following description:\n\n${prompt}`;
+
+  return await callGroqLLM(systemPrompt, userPrompt, apiKey);
+}

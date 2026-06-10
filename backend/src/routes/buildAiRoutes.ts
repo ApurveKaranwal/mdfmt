@@ -22,6 +22,28 @@ router.post(
   }),
 );
 
+import { generateDiagramWithGroq } from "../services/groqService";
+import { config } from "../config";
+
+router.post(
+  "/diagram",
+  asyncHandler(async (req, res) => {
+    const { prompt, apiKey } = req.body;
+    const groqKey = apiKey || config.groqApiKey;
+
+    if (!groqKey) {
+      throw new HttpError(401, "Groq API Key is required for Diagram Generation.");
+    }
+
+    if (!prompt || typeof prompt !== "string") {
+      throw new HttpError(400, "A valid prompt is required.");
+    }
+
+    const mermaidContent = await generateDiagramWithGroq(prompt, groqKey);
+    res.status(200).json({ mermaid: mermaidContent });
+  }),
+);
+
 router.get(
   "/jobs",
   asyncHandler(async (req, res) => {
