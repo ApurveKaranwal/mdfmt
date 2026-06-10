@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { PenTool, BookOpen, Layers, Settings, Moon, Sun } from 'lucide-react';
+import { PenTool, Code2, BookOpen, Layers, Settings, Moon, Sun } from 'lucide-react';
 import { useThemeStore } from '../store/useThemeStore';
 
 export default function Navbar() {
