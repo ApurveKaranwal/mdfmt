@@ -68,7 +68,7 @@ export default function AiGeneratorPage() {
 
         const interval = setInterval(async () => {
             try {
-                const res = await fetch(`http://localhost:4000/api/build-ai/jobs/${job.id}`);
+                const res = await fetch(`https://mdfmt.onrender.com/api/build-ai/jobs/${job.id}`);
                 if (!res.ok) throw new Error('Failed to fetch job status');
                 const data = await res.json();
                 setJob(data.job);
@@ -85,7 +85,7 @@ export default function AiGeneratorPage() {
     
     const fetchRecentJobs = async () => {
         try {
-            const res = await fetch('http://localhost:4000/api/build-ai/jobs');
+            const res = await fetch('https://mdfmt.onrender.com/api/build-ai/jobs');
             if (res.ok) {
                 const data = await res.json();
                 setRecentJobs(data.jobs || []);
@@ -114,7 +114,7 @@ export default function AiGeneratorPage() {
         setJob(null);
 
         try {
-            const res = await fetch('http://localhost:4000/api/build-ai/jobs', {
+            const res = await fetch('https://mdfmt.onrender.com/api/build-ai/jobs', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -146,7 +146,7 @@ export default function AiGeneratorPage() {
         setError('');
 
         try {
-            const res = await fetch(`http://localhost:4000/api/build-ai/jobs/${job.id}/revise`, {
+            const res = await fetch(`https://mdfmt.onrender.com/api/build-ai/jobs/${job.id}/revise`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ feedback: revisionFeedback })
