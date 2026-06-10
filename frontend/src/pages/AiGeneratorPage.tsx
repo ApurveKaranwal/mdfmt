@@ -186,7 +186,7 @@ export default function AiGeneratorPage() {
         worker.postMessage({ text: job.result.readme.slice(0, 300) }); // Send a smaller chunk to prevent OOM
 
         worker.addEventListener('message', (event) => {
-            const { status, result, progress, error } = event.data;
+            const { status, result, error } = event.data;
 
             if (status === 'progress') {
                 // Ignore rapid progress updates to prevent React from crashing

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-    FileText, CheckCircle, BookOpen, User,
+    FileText, CheckCircle, BookOpen,
     GraduationCap, Copy, ArrowRight
 } from 'lucide-react';
 import { useDraftStore } from '../store/useDraftStore';

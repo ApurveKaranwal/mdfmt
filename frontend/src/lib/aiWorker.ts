@@ -2,7 +2,9 @@ import { pipeline, env } from '@huggingface/transformers';
 
 // Skip local model checks since we are running in the browser
 env.allowLocalModels = false;
-env.backends.onnx.wasm.numThreads = 1; // Limit threads to prevent memory crash
+if (env.backends?.onnx?.wasm) {
+  env.backends.onnx.wasm.numThreads = 1; // Limit threads to prevent memory crash
+}
 
 class PipelineSingleton {
   static instance: any = null;
