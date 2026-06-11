@@ -123,7 +123,8 @@ RULES:
 3. Use a markdown fenced code block with \`\`\`mermaid.
 4. Make the diagrams beautiful, well-structured, and use standard Mermaid diagram types (graph TD, sequenceDiagram, etc).
 5. If the user doesn't specify a type, default to a top-down flowchart (graph TD) or left-to-right (graph LR).
-6. CRITICAL: To prevent syntax errors, ALWAYS wrap the text inside node labels in double quotes. For example, use A["User logs in..."] instead of A[User logs in...]. This is extremely important because user descriptions often contain punctuation (like dots, commas, parentheses) that will break Mermaid's parser if unescaped.`;
+6. CRITICAL: To prevent syntax errors, ALWAYS wrap the text inside node labels in double quotes. For example, use A["User logs in..."] instead of A[User logs in...]. This is extremely important because user descriptions often contain punctuation (like dots, commas, parentheses) that will break Mermaid's parser if unescaped.
+7. CRITICAL: When adding text to directed edges, use the EXACT syntax \`-->|text|\` (e.g., \`A -->|text| B\`). DO NOT use invalid syntax like \`-->|text|>\`.`;
 
   const userPrompt = `Generate a Mermaid diagram for the following description:\n\n${prompt}`;
 
