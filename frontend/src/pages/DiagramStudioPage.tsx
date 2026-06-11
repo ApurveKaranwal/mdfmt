@@ -28,17 +28,29 @@ export default function DiagramStudioPage() {
     }, [isDarkMode]);
 
     useEffect(() => {
-        if (activeTab === 'preview' && mermaidRef.current) {
-            mermaidRef.current.removeAttribute('data-processed');
-            mermaidRef.current.innerHTML = mermaidCode;
-            try {
-                mermaid.run({
-                    nodes: [mermaidRef.current]
-                });
-            } catch (err) {
-                console.error("Mermaid parsing error", err);
+        let isMounted = true;
+        
+        const renderDiagram = async () => {
+            if (activeTab === 'preview' && mermaidRef.current) {
+                try {
+                    // Generate a unique ID for the SVG
+                    const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
+                    const { svg } = await mermaid.render(id, mermaidCode);
+                    if (isMounted && mermaidRef.current) {
+                        mermaidRef.current.innerHTML = svg;
+                    }
+                } catch (err) {
+                    console.error("Mermaid parsing error", err);
+                    if (isMounted && mermaidRef.current) {
+                        mermaidRef.current.innerHTML = `<div class="text-red-500 text-xs p-4 border border-red-500 rounded bg-red-50 dark:bg-red-900/20">Syntax Error: Cannot render diagram. Please check the Mermaid code.</div>`;
+                    }
+                }
             }
-        }
+        };
+
+        renderDiagram();
+        
+        return () => { isMounted = false; };
     }, [mermaidCode, activeTab, isDarkMode]);
 
     const handleGenerate = async (e: React.FormEvent) => {
@@ -62,7 +74,7 @@ export default function DiagramStudioPage() {
 
             const data = await res.json();
             // Clean up the response in case the LLM returned markdown code blocks
-            let code = data.mermaid;
+            let code = data.mermaid || '';
             code = code.replace(/```mermaid\n?/g, '').replace(/```\n?/g, '').trim();
             setMermaidCode(code);
             setActiveTab('preview');
@@ -178,8 +190,8 @@ export default function DiagramStudioPage() {
                         <div className="flex-1 overflow-auto custom-scrollbar p-6 bg-slate-50/20 dark:bg-slate-950/10 flex items-center justify-center relative">
                             {activeTab === 'preview' ? (
                                 <div className="w-full h-full flex items-center justify-center min-h-[300px]">
-                                    <div ref={mermaidRef} className="mermaid text-center max-w-full">
-                                        {mermaidCode}
+                                    <div ref={mermaidRef} className="text-center max-w-full overflow-auto">
+                                        {/* Mermaid SVG will be injected here */}
                                     </div>
                                 </div>
                             ) : (
