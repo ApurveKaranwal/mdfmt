@@ -192,7 +192,7 @@ export default function DiagramStudioPage() {
                         <div className="flex-1 overflow-auto custom-scrollbar p-6 bg-slate-50/20 dark:bg-slate-950/10 flex items-center justify-center relative">
                             {activeTab === 'preview' ? (
                                 <div className="w-full h-full flex items-center justify-center min-h-[300px]">
-                                    <div ref={mermaidRef} className="text-center max-w-full overflow-auto">
+                                    <div ref={mermaidRef} className="text-center w-full max-w-full overflow-auto [&>svg]:w-full [&>svg]:max-w-5xl [&>svg]:h-auto">
                                         {/* Mermaid SVG will be injected here */}
                                     </div>
                                 </div>
