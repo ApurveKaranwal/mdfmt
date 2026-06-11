@@ -73,9 +73,11 @@ export default function DiagramStudioPage() {
             }
 
             const data = await res.json();
-            // Clean up the response in case the LLM returned markdown code blocks
+            // Clean up the response in case the LLM returned markdown code blocks or invalid syntax
             let code = data.mermaid || '';
             code = code.replace(/```mermaid\n?/g, '').replace(/```\n?/g, '').trim();
+            // Automatically fix a common LLM hallucination: -->|text|> instead of -->|text|
+            code = code.replace(/-->\|([^|]+)\|>/g, '-->|$1|');
             setMermaidCode(code);
             setActiveTab('preview');
         } catch (err: any) {
