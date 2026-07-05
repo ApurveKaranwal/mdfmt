@@ -2,7 +2,7 @@
   <img src="https://img.icons8.com/fluency/96/markdown.png" alt="mdfmt logo" width="80" />
 </p>
 
-<h1 align="center">mdfmt — README Studio</h1>
+<h1 align="center">mdfmt</h1>
 
 <p align="center">
   <strong>A modern, AI-powered Markdown editor for crafting stunning README files — visually.</strong>
