@@ -41,10 +41,10 @@ export default function CliPage() {
         <main className="flex-1 flex flex-col lg:flex-row overflow-hidden p-4 md:p-6 gap-4 md:gap-6">
 
           {/* LEFT PANEL: Install & Commands */}
-          <div className="w-full lg:w-[420px] shrink-0 flex flex-col gap-4 md:gap-5 overflow-y-auto custom-scrollbar pr-2">
+          <div className="w-full lg:w-[480px] shrink-0 flex flex-col gap-4 md:gap-5 overflow-y-auto custom-scrollbar pr-1">
 
             {/* Install */}
-            <div className="glass-panel rounded-2xl p-5">
+            <div className="glass-panel rounded-2xl p-5 shrink-0">
               <h2 className="text-sm font-bold uppercase tracking-widest text-slate-900 dark:text-slate-100 mb-1 flex items-center gap-2">
                 <Terminal className="w-4 h-4 text-blue-500" /> CLI Tool
               </h2>
@@ -54,23 +54,23 @@ export default function CliPage() {
 
               <div className="space-y-3">
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Quick Start (no install)</label>
-                  <div className="flex items-center justify-between px-3 py-2 bg-slate-900 dark:bg-slate-950 rounded-xl font-mono text-xs text-slate-200">
-                    <span><span className="text-indigo-400">$</span> npx mdfmt</span>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Quick Start (no install)</label>
+                  <div className="flex items-center justify-between px-3.5 py-2.5 bg-slate-900 dark:bg-slate-950 rounded-xl font-mono text-xs text-slate-200">
+                    <span><span className="text-indigo-400 font-bold">$</span> npx mdfmt</span>
                     <CopyBtn cmd="npx mdfmt" />
                   </div>
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Global Install</label>
-                  <div className="flex items-center justify-between px-3 py-2 bg-slate-900 dark:bg-slate-950 rounded-xl font-mono text-xs text-slate-200">
-                    <span><span className="text-indigo-400">$</span> npm install -g mdfmt</span>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Global Install</label>
+                  <div className="flex items-center justify-between px-3.5 py-2.5 bg-slate-900 dark:bg-slate-950 rounded-xl font-mono text-xs text-slate-200">
+                    <span><span className="text-indigo-400 font-bold">$</span> npm install -g mdfmt</span>
                     <CopyBtn cmd="npm install -g mdfmt" />
                   </div>
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Offline Mode (instant, no server)</label>
-                  <div className="flex items-center justify-between px-3 py-2 bg-slate-900 dark:bg-slate-950 rounded-xl font-mono text-xs text-slate-200">
-                    <span><span className="text-amber-400">$</span> mdfmt generate --offline</span>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Offline Mode (instant, no server)</label>
+                  <div className="flex items-center justify-between px-3.5 py-2.5 bg-slate-900 dark:bg-slate-950 rounded-xl font-mono text-xs text-slate-200">
+                    <span><span className="text-amber-400 font-bold">$</span> mdfmt generate --offline</span>
                     <CopyBtn cmd="mdfmt generate --offline" />
                   </div>
                 </div>
@@ -78,16 +78,16 @@ export default function CliPage() {
             </div>
 
             {/* Reference Tabs */}
-            <div className="glass-panel rounded-2xl p-5 flex-1 overflow-hidden flex flex-col">
-              <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-950 p-1 border border-slate-200 dark:border-slate-800 rounded-xl mb-4 shrink-0">
+            <div className="glass-panel rounded-2xl p-5 flex-1 overflow-hidden flex flex-col min-h-[360px]">
+              <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-950 p-1.5 border border-slate-200 dark:border-slate-800 rounded-xl mb-4 shrink-0">
                 {(['quick', 'commands', 'flags'] as const).map((t) => (
                   <button
                     key={t}
                     onClick={() => setActiveTab(t)}
-                    className={`flex-1 py-1.5 text-[10px] font-bold rounded-lg uppercase tracking-wide transition-all ${
+                    className={`flex-1 py-2 text-xs font-bold rounded-lg uppercase tracking-wider transition-all ${
                       activeTab === t
                         ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 shadow-sm'
-                        : 'text-slate-450 dark:text-slate-500 hover:text-slate-850 dark:hover:text-slate-350'
+                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                     }`}
                   >
                     {t === 'quick' ? 'Setup' : t}
@@ -95,35 +95,40 @@ export default function CliPage() {
                 ))}
               </div>
 
-              <div className="overflow-y-auto custom-scrollbar flex-1">
+              <div className="overflow-y-auto custom-scrollbar flex-1 pr-1">
                 {activeTab === 'quick' && (
-                  <div className="space-y-3 text-xs text-slate-600 dark:text-slate-400">
-                    <div className="p-3 border border-slate-200 dark:border-slate-800 rounded-xl bg-white/50 dark:bg-slate-950/50 space-y-2">
-                      <div className="text-[10px] font-bold text-blue-500 uppercase tracking-wider">Step 1 — Link Locally</div>
-                      <p>If developing from source, run <code className="px-1 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-[11px]">npm link</code> inside <code className="px-1 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-[11px]">cli/</code> to register the <code className="px-1 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-[11px]">mdfmt</code> command globally.</p>
-                      <div className="px-3 py-1.5 bg-slate-900 dark:bg-slate-950 rounded-lg font-mono text-[11px] text-slate-300">
-                        cd cli && npm link
+                  <div className="space-y-3.5 text-xs text-slate-600 dark:text-slate-400">
+                    <div className="p-3.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-white/60 dark:bg-slate-950/60 space-y-2.5">
+                      <div className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Step 1 — Link Locally</div>
+                      <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">If developing from source, run <code className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-xs font-mono font-semibold text-slate-800 dark:text-slate-200">npm link</code> inside <code className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-xs font-mono text-slate-800 dark:text-slate-200">cli/</code> to register the command globally.</p>
+                      <div className="flex items-center justify-between px-3.5 py-2 bg-slate-900 dark:bg-slate-950 rounded-xl font-mono text-xs text-slate-200 font-medium">
+                        <span>cd cli && npm link</span>
+                        <CopyBtn cmd="cd cli && npm link" />
                       </div>
                     </div>
-                    <div className="p-3 border border-slate-200 dark:border-slate-800 rounded-xl bg-white/50 dark:bg-slate-950/50 space-y-2">
-                      <div className="text-[10px] font-bold text-blue-500 uppercase tracking-wider">Step 2 — Run Anywhere</div>
-                      <p>Open any project in VS Code, press <code className="px-1 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-[11px]">Ctrl + `</code> to open the terminal, and run:</p>
-                      <div className="px-3 py-1.5 bg-slate-900 dark:bg-slate-950 rounded-lg font-mono text-[11px] text-green-400">
-                        mdfmt generate
+
+                    <div className="p-3.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-white/60 dark:bg-slate-950/60 space-y-2.5">
+                      <div className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Step 2 — Run Anywhere</div>
+                      <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">Open any project in terminal or VS Code (<code className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-xs font-mono text-slate-800 dark:text-slate-200">Ctrl + `</code>), then execute:</p>
+                      <div className="flex items-center justify-between px-3.5 py-2 bg-slate-900 dark:bg-slate-950 rounded-xl font-mono text-xs text-green-400 font-semibold">
+                        <span>mdfmt generate</span>
+                        <CopyBtn cmd="mdfmt generate" />
                       </div>
                     </div>
-                    <div className="p-3 border border-slate-200 dark:border-slate-800 rounded-xl bg-white/50 dark:bg-slate-950/50 space-y-2">
-                      <div className="text-[10px] font-bold text-blue-500 uppercase tracking-wider">Step 3 — CI / Automation</div>
-                      <p>For non-interactive pipelines or scripts, pass <code className="px-1 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-[11px]">--yes</code> to skip prompts:</p>
-                      <div className="px-3 py-1.5 bg-slate-900 dark:bg-slate-950 rounded-lg font-mono text-[11px] text-slate-300">
-                        npx mdfmt generate --yes --offline
+
+                    <div className="p-3.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-white/60 dark:bg-slate-950/60 space-y-2.5">
+                      <div className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Step 3 — CI / Automation</div>
+                      <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">For non-interactive pipelines or scripts, pass <code className="px-1 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-xs font-mono font-semibold text-slate-800 dark:text-slate-200">--yes</code> to skip prompts:</p>
+                      <div className="flex items-center justify-between px-3.5 py-2 bg-slate-900 dark:bg-slate-950 rounded-xl font-mono text-xs text-slate-200 font-medium">
+                        <span>npx mdfmt generate --yes --offline</span>
+                        <CopyBtn cmd="npx mdfmt generate --yes --offline" />
                       </div>
                     </div>
                   </div>
                 )}
 
                 {activeTab === 'commands' && (
-                  <div className="space-y-2">
+                  <div className="space-y-2.5">
                     {[
                       { cmd: 'npx mdfmt', desc: 'Interactive wizard — scans repo and prompts for tone and depth.' },
                       { cmd: 'mdfmt generate', desc: 'Generate README for the current directory.' },
@@ -134,16 +139,20 @@ export default function CliPage() {
                       { cmd: 'mdfmt generate -k gsk_...', desc: 'Use your own Groq API key for generation.' },
                       { cmd: 'mdfmt init', desc: 'Initialize config wizard in the current project.' }
                     ].map((item, i) => (
-                      <div key={i} className="flex items-start gap-3 p-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-white/50 dark:bg-slate-950/50 hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
-                        <code className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 whitespace-nowrap font-mono shrink-0 mt-0.5">{item.cmd}</code>
-                        <span className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">{item.desc}</span>
+                      <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 border border-slate-200 dark:border-slate-800 rounded-xl bg-white/60 dark:bg-slate-950/60 hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
+                        <div className="flex items-center justify-between w-full sm:w-auto gap-2">
+                          <code className="text-xs font-bold text-indigo-600 dark:text-indigo-400 font-mono whitespace-nowrap">{item.cmd}</code>
+                          <div className="sm:hidden"><CopyBtn cmd={item.cmd} /></div>
+                        </div>
+                        <span className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{item.desc}</span>
+                        <div className="hidden sm:block shrink-0"><CopyBtn cmd={item.cmd} /></div>
                       </div>
                     ))}
                   </div>
                 )}
 
                 {activeTab === 'flags' && (
-                  <div className="space-y-2">
+                  <div className="space-y-2.5">
                     {[
                       { flag: '-l, --offline', desc: 'Bypass server, generate locally in ~0.1s.' },
                       { flag: '-o, --output <path>', desc: 'Output filename. Defaults to README.md.' },
@@ -151,12 +160,12 @@ export default function CliPage() {
                       { flag: '-i, --instructions <text>', desc: 'Custom instructions for the AI.' },
                       { flag: '-s, --server <url>', desc: 'Custom backend server URL.' },
                       { flag: '-k, --groq-key <key>', desc: 'Groq API key for LLM generation.' },
-                      { flag: '-h, --help', desc: 'Show help.' },
-                      { flag: '-V, --version', desc: 'Print version.' }
+                      { flag: '-h, --help', desc: 'Show help menu.' },
+                      { flag: '-V, --version', desc: 'Print version number.' }
                     ].map((item, i) => (
-                      <div key={i} className="flex items-start gap-3 p-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-white/50 dark:bg-slate-950/50">
-                        <code className="text-[11px] font-bold text-purple-600 dark:text-purple-400 whitespace-nowrap font-mono shrink-0 mt-0.5">{item.flag}</code>
-                        <span className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">{item.desc}</span>
+                      <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 border border-slate-200 dark:border-slate-800 rounded-xl bg-white/60 dark:bg-slate-950/60">
+                        <code className="text-xs font-bold text-purple-600 dark:text-purple-400 font-mono whitespace-nowrap">{item.flag}</code>
+                        <span className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{item.desc}</span>
                       </div>
                     ))}
                   </div>
