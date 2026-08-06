@@ -139,25 +139,44 @@ export async function scanLocalRepository(rootDir: string): Promise<RepositorySn
     }
   }
 
-  // Sample relevant source files (up to 30 files max)
+  // Sample relevant source files (up to 80 files for deep analysis)
   const prioritizeFiles = allRelativeFiles.filter((f) => {
     const name = path.basename(f).toLowerCase();
+    const dir = f.toLowerCase();
     return (
       name.includes('config') ||
       name.includes('server') ||
       name.includes('index') ||
       name.includes('app') ||
       name.includes('main') ||
+      name.includes('route') ||
+      name.includes('controller') ||
+      name.includes('middleware') ||
+      name.includes('model') ||
+      name.includes('schema') ||
+      name.includes('hook') ||
       name === 'package.json' ||
       name === 'cargo.toml' ||
       name === 'pyproject.toml' ||
       name === 'go.mod' ||
-      name === 'dockerfile'
+      name === 'dockerfile' ||
+      name === '.env.example' ||
+      name === '.env.sample' ||
+      name.endsWith('.prisma') ||
+      dir.includes('/pages/') ||
+      dir.includes('/components/') ||
+      dir.includes('.github/workflows/')
     );
   });
 
-  const remainingFiles = allRelativeFiles.filter((f) => !prioritizeFiles.includes(f));
-  const selectedFiles = [...prioritizeFiles, ...remainingFiles].slice(0, 30);
+  // Also prioritize all .tsx/.jsx (component/page files) and route-like files
+  const componentFiles = allRelativeFiles.filter((f) => {
+    const ext = path.extname(f).toLowerCase();
+    return !prioritizeFiles.includes(f) && (ext === '.tsx' || ext === '.jsx' || ext === '.vue');
+  });
+
+  const remainingFiles = allRelativeFiles.filter((f) => !prioritizeFiles.includes(f) && !componentFiles.includes(f));
+  const selectedFiles = [...prioritizeFiles, ...componentFiles, ...remainingFiles].slice(0, 80);
 
   for (const fileRel of selectedFiles) {
     const fullPath = path.join(rootDir, fileRel);
@@ -173,7 +192,7 @@ export async function scanLocalRepository(rootDir: string): Promise<RepositorySn
         path: fileRel.replace(/\\/g, '/'),
         language: EXT_TO_LANG[ext] || 'PlainText',
         size: stats.size,
-        content: content.slice(0, 5000) // Truncate individual file sample to 5KB max
+        content: content.slice(0, 8000) // Truncate individual file sample to 8KB max
       });
     } catch {
       // Ignore unreadable files
