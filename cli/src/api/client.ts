@@ -165,11 +165,205 @@ const FLAT_SQUARE_BADGES: Record<string, string> = {
   Vite: 'https://img.shields.io/badge/Vite-6.0-646cff?style=flat-square&logo=vite&logoColor=white'
 };
 
+function analyzeCodebase(snapshot: any, pkg: any) {
+  const analysis = {
+    apiRoutes: [] as { method: string; path: string; file: string }[],
+    components: [] as { name: string; file: string }[],
+    exports: [] as { name: string; type: 'function' | 'class' | 'const'; file: string }[],
+    envVars: [] as { name: string; file: string }[],
+    dbModels: [] as { name: string; orm: string; file: string }[],
+    middleware: [] as string[],
+    hooks: [] as { name: string; file: string }[],
+    configFiles: [] as { file: string; purpose: string }[],
+    metrics: { locByLang: {} as Record<string, number>, totalLoc: 0 },
+    entryPoints: [] as { file: string; bootstraps: string }[],
+    thirdParty: new Set<string>(),
+  };
+
+  const thirdPartyRegexes: Record<string, RegExp> = {
+    'Stripe': /['"]stripe['"]/,
+    'SendGrid': /@sendgrid\/mail/,
+    'Twilio': /['"]twilio['"]/,
+    'Firebase': /firebase\//,
+    'Supabase': /@supabase\/supabase-js/,
+    'AWS SDK': /aws-sdk|@aws-sdk\//,
+    'Google Cloud': /@google-cloud\//,
+    'Redis': /['"]redis['"]|['"]ioredis['"]/,
+    'Bull': /['"]bull['"]|['"]bullmq['"]/,
+    'Socket.IO': /['"]socket\.io['"]|['"]socket\.io-client['"]/,
+    'Passport': /['"]passport['"]/,
+    'JWT': /['"]jsonwebtoken['"]/,
+    'Bcrypt': /['"]bcrypt['"]|['"]bcryptjs['"]/,
+    'Multer': /['"]multer['"]/,
+    'Nodemailer': /['"]nodemailer['"]/,
+  };
+
+  const configDetectors: Record<string, string> = {
+    'tsconfig': 'TypeScript compiler configuration',
+    'eslint': 'ESLint linting rules',
+    '.prettierrc': 'Prettier code formatting rules',
+    'tailwind.config': 'Tailwind CSS design tokens and theme',
+    'vite.config': 'Vite bundler configuration',
+    'next.config': 'Next.js framework settings',
+    'docker-compose': 'Docker multi-container orchestration',
+    'Dockerfile': 'Docker image build instructions',
+    'jest.config': 'Jest testing framework setup',
+  };
+
+  const entryPointNames = ['index.ts', 'index.js', 'main.ts', 'main.js', 'app.ts', 'app.js', 'server.ts', 'server.js'];
+  if (pkg.main) entryPointNames.push(pkg.main.split('/').pop() || pkg.main);
+
+  for (const file of (snapshot.files || [])) {
+    if (!file.content) continue;
+    const lines = file.content.split('\n');
+    const ext = file.path.includes('.') ? '.' + file.path.split('.').pop()! : '';
+    const isComponentFile = /\.(tsx|jsx|vue)$/.test(file.path);
+    const fileName = file.path.split('/').pop() || file.path;
+
+    // Metrics
+    analysis.metrics.totalLoc += lines.length;
+    if (ext) {
+      analysis.metrics.locByLang[ext] = (analysis.metrics.locByLang[ext] || 0) + lines.length;
+    }
+
+    // Config files
+    for (const [key, purpose] of Object.entries(configDetectors)) {
+      if (fileName.includes(key)) {
+        analysis.configFiles.push({ file: file.path, purpose });
+        break;
+      }
+    }
+    if (file.path.includes('.github/workflows/')) {
+      analysis.configFiles.push({ file: file.path, purpose: 'GitHub Actions CI/CD pipeline' });
+    }
+
+    // Entry points
+    if (entryPointNames.includes(fileName) || file.path.includes('bin/')) {
+      const firstFew = lines.slice(0, 10).join('\n');
+      let bootstraps = 'Entry point / bootstrap script';
+      if (firstFew.includes('express()') || firstFew.includes('app.listen')) bootstraps = 'Express server initialization';
+      else if (firstFew.includes('createRoot') || firstFew.includes('ReactDOM')) bootstraps = 'React application mount';
+      else if (firstFew.includes('createApp')) bootstraps = 'Vue application mount';
+      else if (firstFew.includes('NestFactory.create')) bootstraps = 'NestJS application bootstrap';
+      analysis.entryPoints.push({ file: file.path, bootstraps });
+    }
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      // API Routes
+      const routeMatch = line.match(/(?:app|router)\.(get|post|put|delete|patch)\(['"`](\/?[^'"`]+)['"`]/);
+      if (routeMatch) {
+        analysis.apiRoutes.push({ method: routeMatch[1].toUpperCase(), path: routeMatch[2], file: file.path });
+      }
+
+      // Middleware
+      if (line.match(/(?:app|router)\.use\(/)) {
+        analysis.middleware.push(line.trim());
+      }
+      
+      // Hooks
+      const hookMatch = line.match(/function (use[A-Z][a-zA-Z0-9_]*)/);
+      if (hookMatch) {
+        analysis.hooks.push({ name: hookMatch[1], file: file.path });
+      }
+
+      // Third-party
+      for (const [tp, regex] of Object.entries(thirdPartyRegexes)) {
+        if (regex.test(line)) analysis.thirdParty.add(tp);
+      }
+
+      // Env vars
+      const envMatch = line.match(/(?:process\.env\.|import\.meta\.env\.)([A-Z_][A-Z0-9_]*)/);
+      if (envMatch) {
+        analysis.envVars.push({ name: envMatch[1], file: file.path });
+      }
+      if (file.path.includes('.env.example') || file.path.includes('.env.sample')) {
+        const dotenvMatch = line.match(/^([A-Z_][A-Z0-9_]*)=/);
+        if (dotenvMatch) {
+          analysis.envVars.push({ name: dotenvMatch[1], file: file.path });
+        }
+      }
+
+      // Components
+      if (isComponentFile) {
+        let compName = '';
+        const exportDefFunc = line.match(/export default function ([A-Z][a-zA-Z0-9_]*)/);
+        const exportFunc = line.match(/export function ([A-Z][a-zA-Z0-9_]*)/);
+        const exportConst = line.match(/export const ([A-Z][a-zA-Z0-9_]*)\s*=/);
+        const constFc = line.match(/const ([A-Z][a-zA-Z0-9_]*)\s*:\s*React\.FC/);
+        const exportDefClass = line.match(/export default class ([A-Z][a-zA-Z0-9_]*)/);
+
+        if (exportDefFunc) compName = exportDefFunc[1];
+        else if (exportFunc) compName = exportFunc[1];
+        else if (exportConst) compName = exportConst[1];
+        else if (constFc) compName = constFc[1];
+        else if (exportDefClass) compName = exportDefClass[1];
+
+        if (compName) analysis.components.push({ name: compName, file: file.path });
+      } else {
+        // Exports
+        let expName = '';
+        let expType: 'function' | 'class' | 'const' = 'function';
+        
+        const expFuncMatch = line.match(/export function ([a-zA-Z0-9_]+)/);
+        const expClassMatch = line.match(/export class ([a-zA-Z0-9_]+)/);
+        const expConstMatch = line.match(/export const ([a-zA-Z0-9_]+)\s*=/);
+        const expDefaultFuncMatch = line.match(/export default function\s+([a-zA-Z0-9_]+)/);
+        const moduleExportsMatch = line.match(/module\.exports\s*=\s*([a-zA-Z0-9_]+)/);
+
+        if (expFuncMatch) { expName = expFuncMatch[1]; expType = 'function'; }
+        else if (expClassMatch) { expName = expClassMatch[1]; expType = 'class'; }
+        else if (expConstMatch) { expName = expConstMatch[1]; expType = 'const'; }
+        else if (expDefaultFuncMatch) { expName = expDefaultFuncMatch[1]; expType = 'function'; }
+        else if (moduleExportsMatch) { expName = moduleExportsMatch[1]; expType = 'const'; }
+
+        if (expName) analysis.exports.push({ name: expName, type: expType, file: file.path });
+      }
+
+      // DB Models
+      if (file.path.endsWith('.prisma') && line.match(/model\s+([A-Z][a-zA-Z0-9_]*)\s+{/)) {
+        analysis.dbModels.push({ name: line.match(/model\s+([A-Z][a-zA-Z0-9_]*)\s+{/)![1], orm: 'Prisma', file: file.path });
+      }
+      if (line.match(/new\s+Schema\(/) || line.match(/mongoose\.model\(/)) {
+        analysis.dbModels.push({ name: 'Mongoose Model', orm: 'Mongoose', file: file.path });
+      }
+      if (line.match(/@Entity\(\)/) || line.match(/class ([A-Z][a-zA-Z0-9_]*)\s+extends\s+Model/)) {
+        analysis.dbModels.push({ name: 'Entity', orm: line.match(/@Entity\(\)/) ? 'TypeORM' : 'Sequelize', file: file.path });
+      }
+      if (line.match(/sequelize\.define\(/)) {
+        analysis.dbModels.push({ name: 'Sequelize Model', orm: 'Sequelize', file: file.path });
+      }
+      if (file.path.endsWith('.sql') && line.toLowerCase().includes('create table')) {
+         const sqlMatch = line.match(/create table (?:if not exists )?([a-zA-Z0-9_]+)/i);
+         if (sqlMatch) analysis.dbModels.push({ name: sqlMatch[1], orm: 'SQL', file: file.path });
+      }
+    }
+  }
+
+  const uniqueEnvVars = Array.from(new Set(analysis.envVars.map(v => JSON.stringify(v)))).map(s => JSON.parse(s));
+  const uniqueApiRoutes = Array.from(new Set(analysis.apiRoutes.map(r => JSON.stringify(r)))).map(s => JSON.parse(s));
+  const uniqueComponents = Array.from(new Set(analysis.components.map(c => JSON.stringify(c)))).map(s => JSON.parse(s));
+  const uniqueExports = Array.from(new Set(analysis.exports.map(e => JSON.stringify(e)))).map(s => JSON.parse(s));
+  
+  return {
+    ...analysis,
+    envVars: uniqueEnvVars,
+    apiRoutes: uniqueApiRoutes,
+    components: uniqueComponents,
+    exports: uniqueExports,
+    thirdPartyArray: Array.from(analysis.thirdParty)
+  };
+}
+
 function generateFallbackReadme(snapshot: RepositorySnapshot, options: GenerateOptions): string {
-  const pkg = (snapshot.packageManifests[0] as any) || {};
-  const name = options.projectName || pkg.name || snapshot.repo;
+  const pkg: any = (snapshot.packageManifests && snapshot.packageManifests[0]) || {};
+  const name = options.projectName || pkg.name || snapshot.repo || 'Project';
   const version = pkg.version ? `v${pkg.version}` : 'v1.0.0';
   const license = pkg.license || 'MIT';
+
+  // --- Codebase Analysis ---
+  const analysis = analyzeCodebase(snapshot as any, pkg);
 
   // --- Derive real data from the scan ---
   const fileCount = snapshot.fileTree.length;
@@ -187,9 +381,23 @@ function generateFallbackReadme(snapshot: RepositorySnapshot, options: GenerateO
     .map(([ext, count]) => `\`${ext}\` (${count})`)
     .join(', ');
 
-  // Description — use real data
+  const hasFrontend = folders.has('components') || folders.has('pages') || snapshot.detectedStack.includes('React') || snapshot.detectedStack.includes('Vue');
+  const hasBackend = folders.has('routes') || folders.has('models') || snapshot.detectedStack.includes('Express') || snapshot.detectedStack.includes('Fastify');
+  
+  let architecture = '';
+  if (hasFrontend && hasBackend) {
+    architecture = 'This project appears to be a **Full-stack Monorepo / Client-Server** application.';
+  } else if (hasFrontend) {
+    architecture = 'This project appears to be a **Frontend Client** application.';
+  } else if (hasBackend) {
+    architecture = 'This project appears to be a **Backend API / Service** application.';
+  } else {
+    architecture = 'This project is a modular software repository.';
+  }
+
+  // Description
   const description = pkg.description ||
-    `${name} is a ${snapshot.detectedStack.slice(0, 3).join('/') || 'software'} project containing ${fileCount} source files across ${folders.size} directories.`;
+    `${name} is a ${snapshot.detectedStack.slice(0, 3).join('/') || 'software'} project.`;
 
   // Badges
   const techBadges = snapshot.detectedStack
@@ -199,7 +407,7 @@ function generateFallbackReadme(snapshot: RepositorySnapshot, options: GenerateO
     })
     .join(' ');
 
-  // Directory tree (show up to 40 files with proper nesting)
+  // Directory tree
   const treeLines: string[] = [];
   const shownFiles = snapshot.fileTree.slice(0, 40);
   shownFiles.forEach((f, i) => {
@@ -214,11 +422,84 @@ function generateFallbackReadme(snapshot: RepositorySnapshot, options: GenerateO
   // Directory table
   const directoryRows = generateDirectoryTableRows(snapshot.fileTree);
 
+  // Components per directory text
+  let projectStructureExtra = '';
+  if (analysis.components.length > 0) {
+     projectStructureExtra = `\nFound **${analysis.components.length} UI components** across the directories.\n`;
+  }
+
   // Tech Matrix
-  const techMatrixRows = snapshot.detectedStack
+  let techMatrixRows = snapshot.detectedStack
     .filter((t) => TECH_CATEGORIES[t])
     .map((t) => `| **${t}** | \`${TECH_CATEGORIES[t].category}\` | ${TECH_CATEGORIES[t].desc} |`)
     .join('\n');
+    
+  if (analysis.thirdPartyArray.length > 0) {
+    analysis.thirdPartyArray.forEach(tp => {
+      techMatrixRows += `\n| **${tp}** | \`Third-party Service\` | External integration detected in imports. |`;
+    });
+  }
+
+  // Features
+  const features: string[] = [];
+  if (analysis.apiRoutes.length > 0) features.push(`- 🌐 **API Endpoints** — exposes ${analysis.apiRoutes.length} HTTP routes.`);
+  if (analysis.components.length > 0) features.push(`- ⚛️ **Component-based UI** — contains ${analysis.components.length} React/Vue components.`);
+  if (analysis.dbModels.length > 0) features.push(`- 🗄️ **Database Schema** — defines ${analysis.dbModels.length} database models (${[...new Set(analysis.dbModels.map(m=>m.orm))].join(', ')}).`);
+  if (analysis.thirdPartyArray.includes('Passport') || analysis.thirdPartyArray.includes('JWT')) features.push(`- 🔒 **Authentication** — handles secure user sessions/tokens.`);
+  if (analysis.configFiles.some(c => c.file.includes('.github/workflows'))) features.push(`- 🚀 **CI/CD** — automated pipelines configured via GitHub Actions.`);
+  if (snapshot.detectedStack.includes('Docker') || analysis.configFiles.some(c => c.file.includes('Docker'))) features.push(`- 🐳 **Dockerized** — deployment-ready container configuration.`);
+  if (pkg.scripts?.test || pkg.scripts?.['test:unit']) features.push(`- 🧪 **Testing** — automated test suite included.`);
+  
+  if (features.length === 0) {
+    features.push(`- 📁 **${folders.size} Modules** — organized codebase structure.`);
+    features.push(`- 📄 **${fileCount} Source Files** — ready for development.`);
+  }
+
+  // API Reference
+  let apiSection = '';
+  if (analysis.apiRoutes.length > 0) {
+    const routeRows = analysis.apiRoutes.map(r => `| \`${r.method}\` | \`${r.path}\` | \`${r.file}\` |`).join('\n');
+    const table = analysis.apiRoutes.length > 10 ? `<details>\n<summary>View ${analysis.apiRoutes.length} API Routes</summary>\n\n| Method | Endpoint | File |\n| :--- | :--- | :--- |\n${routeRows}\n\n</details>` : `| Method | Endpoint | File |\n| :--- | :--- | :--- |\n${routeRows}`;
+    apiSection = `## 📡 API Reference\n\n${table}\n\n---\n\n`;
+  }
+
+  // Database Schema
+  let dbSection = '';
+  if (analysis.dbModels.length > 0) {
+    const dbRows = analysis.dbModels.map(m => `| \`${m.name}\` | ${m.orm} | \`${m.file}\` |`).join('\n');
+    const table = analysis.dbModels.length > 10 ? `<details>\n<summary>View ${analysis.dbModels.length} Database Models</summary>\n\n| Model | ORM | File |\n| :--- | :--- | :--- |\n${dbRows}\n\n</details>` : `| Model | ORM | File |\n| :--- | :--- | :--- |\n${dbRows}`;
+    dbSection = `## 🗄️ Database Schema\n\n${table}\n\n---\n\n`;
+  }
+
+  // Components
+  let compSection = '';
+  if (analysis.components.length > 0) {
+    const compRows = analysis.components.map(c => `| \`${c.name}\` | \`${c.file}\` |`).join('\n');
+    const table = analysis.components.length > 10 ? `<details>\n<summary>View ${analysis.components.length} UI Components</summary>\n\n| Component | File |\n| :--- | :--- |\n${compRows}\n\n</details>` : `| Component | File |\n| :--- | :--- |\n${compRows}`;
+    compSection = `## 🧩 UI Components\n\n${table}\n\n---\n\n`;
+  }
+
+  // Exported Modules
+  let expSection = '';
+  if (analysis.exports.length > 0) {
+    const expRows = analysis.exports.slice(0, 20).map(e => `| \`${e.name}\` | \`${e.type}\` | \`${e.file}\` |`).join('\n');
+    const table = analysis.exports.length > 10 ? `<details>\n<summary>View Key Exports</summary>\n\n| Name | Type | File |\n| :--- | :--- | :--- |\n${expRows}\n\n</details>` : `| Name | Type | File |\n| :--- | :--- | :--- |\n${expRows}`;
+    expSection = `## 📦 Exported Modules\n\n${table}\n\n---\n\n`;
+  }
+
+  // Config Files
+  let configSection = '';
+  if (analysis.configFiles.length > 0) {
+    const confRows = analysis.configFiles.map(c => `| \`${c.file}\` | ${c.purpose} |`).join('\n');
+    configSection = `## ⚙️ Configuration Files\n\n| File | Purpose |\n| :--- | :--- |\n${confRows}\n\n---\n\n`;
+  }
+
+  // CI/CD
+  let cicdSection = '';
+  const githubActions = analysis.configFiles.filter(c => c.file.includes('.github/workflows'));
+  if (githubActions.length > 0) {
+    cicdSection = `## 🚀 CI/CD Pipeline\n\nThis project uses GitHub Actions for continuous integration/deployment. Workflows detected:\n${githubActions.map(a => `- \`${a.file}\``).join('\n')}\n\n---\n\n`;
+  }
 
   // Scripts table
   let scriptsSection = '';
@@ -229,152 +510,86 @@ function generateFallbackReadme(snapshot: RepositorySnapshot, options: GenerateO
         return `| \`npm run ${cmd}\` | \`${script}\` | ${action} |`;
       })
       .join('\n');
-    scriptsSection = `## 📜 Available Scripts
-
-| Command | Script | What it does |
-| :--- | :--- | :--- |
-${rows}
-
----
-
-`;
+    scriptsSection = `## 📜 Scripts\n\n| Command | Script | What it does |\n| :--- | :--- | :--- |\n${rows}\n\n---\n\n`;
   }
 
-  // Dependencies section — list actual deps from package.json
+  // Dependencies
   let depsSection = '';
   if (pkg.dependencies && Object.keys(pkg.dependencies).length > 0) {
-    const depEntries = Object.entries(pkg.dependencies as Record<string, string>);
-    const depRows = depEntries.slice(0, 20).map(([dep, ver]) => `| \`${dep}\` | \`${ver}\` |`).join('\n');
-    depsSection = `## 📦 Dependencies
-
-| Package | Version |
-| :--- | :--- |
-${depRows}
-${depEntries.length > 20 ? `\n*... and ${depEntries.length - 20} more. See [\`package.json\`](./package.json) for the full list.*\n` : ''}
-`;
-    if (pkg.devDependencies && Object.keys(pkg.devDependencies).length > 0) {
-      const devEntries = Object.entries(pkg.devDependencies as Record<string, string>);
-      const devRows = devEntries.slice(0, 10).map(([dep, ver]) => `| \`${dep}\` | \`${ver}\` |`).join('\n');
-      depsSection += `
-### Dev Dependencies
-
-| Package | Version |
-| :--- | :--- |
-${devRows}
-${devEntries.length > 10 ? `\n*... and ${devEntries.length - 10} more.*\n` : ''}
-`;
-    }
-    depsSection += '\n---\n\n';
-  }
-
-  // Features — derived from actual scan data, not hardcoded
-  const features: string[] = [];
-  if (folders.size >= 3) features.push(`- 📁 **${folders.size} Organized Modules** — code is split across \`${[...folders].slice(0, 4).join('/\`, \`')}/\` and more, keeping concerns separated.`);
-  if (snapshot.detectedStack.includes('TypeScript')) features.push('- 🛡️ **TypeScript** — full static typing across the codebase for compile-time safety and editor autocomplete.');
-  if (snapshot.detectedStack.includes('React') || snapshot.detectedStack.includes('Vue') || snapshot.detectedStack.includes('Angular')) features.push(`- ⚛️ **${snapshot.detectedStack.find(s => ['React','Vue','Angular'].includes(s))} Frontend** — component-based UI with reactive state management.`);
-  if (snapshot.detectedStack.includes('Express') || snapshot.detectedStack.includes('Fastify')) features.push('- 🌐 **REST API Backend** — Express/Fastify server with route handlers and middleware.');
-  if (snapshot.detectedStack.includes('Docker')) features.push('- 🐳 **Docker** — containerized for consistent dev/prod environments.');
-  if (snapshot.detectedStack.includes('TailwindCSS')) features.push('- 🎨 **TailwindCSS** — utility-first CSS framework for rapid UI development.');
-  if (snapshot.detectedStack.includes('Prisma')) features.push('- 🗄️ **Prisma ORM** — type-safe database access with auto-generated client.');
-  if (pkg.scripts?.test || pkg.scripts?.['test:unit']) features.push('- 🧪 **Test Suite** — automated tests configured via `npm test`.');
-  if (pkg.scripts?.lint || pkg.scripts?.format) features.push('- ✨ **Linting & Formatting** — code quality enforced with linter/formatter scripts.');
-  if (features.length === 0) {
-    features.push(`- 📄 **${fileCount} Source Files** — organized across ${folders.size} directories.`);
-    features.push(`- 🔧 **File Types** — ${topExtensions || 'various source files'}.`);
-  }
-
-  // Env vars — try to detect from actual .env files or common patterns
-  const envVars: string[] = [];
-  snapshot.files.forEach((f) => {
-    if (f.path.includes('.env.example') || f.path.includes('.env.sample')) {
-      f.content.split('\n').forEach((line) => {
-        const match = line.match(/^([A-Z_][A-Z0-9_]*)=/);
-        if (match) envVars.push(match[1]);
+    const categorizeDeps = (deps: Record<string, string>) => {
+      const cats: Record<string, [string, string][]> = { HTTP: [], Database: [], Auth: [], UI: [], Utilities: [], Other: [] };
+      Object.entries(deps).forEach(([dep, ver]) => {
+        if (dep.includes('express') || dep.includes('axios') || dep.includes('fetch')) cats.HTTP.push([dep, ver]);
+        else if (dep.includes('prisma') || dep.includes('mongoose') || dep.includes('pg') || dep.includes('sql')) cats.Database.push([dep, ver]);
+        else if (dep.includes('passport') || dep.includes('jwt') || dep.includes('auth')) cats.Auth.push([dep, ver]);
+        else if (dep.includes('react') || dep.includes('vue') || dep.includes('tailwind') || dep.includes('css')) cats.UI.push([dep, ver]);
+        else if (dep.includes('lodash') || dep.includes('moment') || dep.includes('date-fns')) cats.Utilities.push([dep, ver]);
+        else cats.Other.push([dep, ver]);
       });
+      return cats;
+    };
+    
+    const cats = categorizeDeps(pkg.dependencies);
+    let depsMd = '';
+    for (const [cat, items] of Object.entries(cats)) {
+      if (items.length > 0) {
+        depsMd += `**${cat}**\n${items.map(([dep, ver]) => `- \`${dep}\`: ${ver}`).join('\n')}\n\n`;
+      }
     }
-  });
-  let envSection: string;
-  if (envVars.length > 0) {
-    const envRows = [...new Set(envVars)].slice(0, 12).map((v) => `| \`${v}\` | — | See \`.env.example\` |`).join('\n');
-    envSection = `## 🔧 Environment Variables
-
-Variables detected from \`.env.example\`:
-
-| Variable | Default | Description |
-| :--- | :--- | :--- |
-${envRows}
-
-Copy the example file and fill in your values:
-
-\\\`\\\`\\\`bash
-cp .env.example .env
-\\\`\\\`\\\``;
-  } else {
-    envSection = `## 🔧 Configuration
-
-If the project uses environment variables, create a \`.env\` file in the project root:
-
-\\\`\\\`\\\`bash
-cp .env.example .env
-\\\`\\\`\\\`
-
-Edit the file and fill in any required values (API keys, database URLs, etc.).`;
+    
+    depsSection = `## 📦 Dependencies\n\n${depsMd}---\n\n`;
   }
 
-  // Prerequisites — only list what's actually detected
+  // Env vars
+  let envSection = '';
+  if (analysis.envVars.length > 0) {
+    const envRows = analysis.envVars.slice(0, 15).map((v) => `| \`${v.name}\` | \`${v.file}\` |`).join('\n');
+    envSection = `## 🔧 Environment Variables\n\nDetected environment variable references:\n\n| Variable | File | \n| :--- | :--- |\n${envRows}\n\nCopy \`.env.example\` to \`.env\` and configure these values.\n\n---\n\n`;
+  } else {
+    envSection = `## 🔧 Configuration\n\nIf the project uses environment variables, create a \`.env\` file in the project root.\n\n---\n\n`;
+  }
+
+  // Prerequisites
   const prereqs: string[] = [];
-  if (snapshot.detectedStack.includes('Node.js')) prereqs.push('- **Node.js** v18+ and **npm** (or yarn/pnpm)');
+  if (snapshot.detectedStack.includes('Node.js') || pkg.dependencies) prereqs.push('- **Node.js** v18+ and **npm** (or yarn/pnpm)');
   if (snapshot.detectedStack.includes('Python')) prereqs.push('- **Python** 3.9+');
   if (snapshot.detectedStack.includes('Rust')) prereqs.push('- **Rust** (latest stable via `rustup`)');
   if (snapshot.detectedStack.includes('Go')) prereqs.push('- **Go** 1.20+');
-  if (snapshot.detectedStack.includes('Docker')) prereqs.push('- **Docker** and **Docker Compose**');
+  if (snapshot.detectedStack.includes('Docker') || analysis.configFiles.some(c=>c.file.includes('Docker'))) prereqs.push('- **Docker**');
   prereqs.push('- **Git**');
 
-  // Install steps — derive from actual scripts
-  const installCmd = snapshot.detectedStack.includes('Node.js') ? 'npm install' :
-    snapshot.detectedStack.includes('Python') ? 'pip install -r requirements.txt' :
-    snapshot.detectedStack.includes('Rust') ? 'cargo build' :
-    snapshot.detectedStack.includes('Go') ? 'go mod download' : '# Install dependencies';
+  // Install steps
+  let installCmd = 'npm install';
+  if (snapshot.fileTree.includes('yarn.lock')) installCmd = 'yarn install';
+  else if (snapshot.fileTree.includes('pnpm-lock.yaml')) installCmd = 'pnpm install';
+  else if (snapshot.detectedStack.includes('Python')) installCmd = 'pip install -r requirements.txt';
+  else if (snapshot.detectedStack.includes('Rust')) installCmd = 'cargo build';
+  else if (snapshot.detectedStack.includes('Go')) installCmd = 'go mod download';
+  else if (snapshot.fileTree.includes('Makefile')) installCmd = 'make install';
+  
+  if (pkg.workspaces) installCmd += '\n   # Monorepo workspaces detected, installing across all packages';
+
   const devCmd = pkg.scripts?.dev ? 'npm run dev' :
     pkg.scripts?.start ? 'npm start' :
     snapshot.detectedStack.includes('Python') ? 'python main.py' : '# Start the application';
   const buildCmd = pkg.scripts?.build ? 'npm run build' : '# Build for production';
 
-  // Troubleshooting — more entries, based on stack
+  // Troubleshooting
   const faqEntries: string[] = [];
-  if (snapshot.detectedStack.includes('Node.js')) {
-    faqEntries.push(`<details>
-<summary><strong>npm install fails or modules are missing</strong></summary>
-<br>
-Delete <code>node_modules</code> and the lockfile, then reinstall:
-
-\\\`\\\`\\\`bash
-rm -rf node_modules package-lock.json
-npm install
-\\\`\\\`\\\`
-
-Make sure you are on Node.js v18 or higher: <code>node --version</code>.
-</details>`);
+  if (pkg.dependencies) {
+    faqEntries.push(`<details>\n<summary><strong>npm install fails or modules are missing</strong></summary>\n<br>\nDelete <code>node_modules</code> and the lockfile, then reinstall:\n\n\`\`\`bash\nrm -rf node_modules package-lock.json\nnpm install\n\`\`\`\n</details>`);
   }
   if (pkg.scripts?.dev || pkg.scripts?.start) {
-    faqEntries.push(`<details>
-<summary><strong>Port already in use</strong></summary>
-<br>
-Another process is using the same port. Either stop it or change the port in your <code>.env</code> file.
-</details>`);
+    faqEntries.push(`<details>\n<summary><strong>Port already in use</strong></summary>\n<br>\nAnother process is using the same port. Either stop it or change the port in your <code>.env</code> file.\n</details>`);
   }
-  if (snapshot.detectedStack.includes('TypeScript')) {
-    faqEntries.push(`<details>
-<summary><strong>TypeScript errors after pulling new changes</strong></summary>
-<br>
-Run <code>npm install</code> to pick up any new dependencies, then <code>npx tsc --noEmit</code> to check types.
-</details>`);
+  faqEntries.push(`<details>\n<summary><strong>Environment variables not loading</strong></summary>\n<br>\nMake sure you have a <code>.env</code> file in the project root. Copy from <code>.env.example</code> if available.\n</details>`);
+
+  const entryPointsMd = analysis.entryPoints.length > 0 ? `\n\n**Entry Points:**\n${analysis.entryPoints.map(e => `- \`${e.file}\`: ${e.bootstraps}`).join('\n')}` : '';
+
+  let testSection = '';
+  if (pkg.scripts?.test || pkg.scripts?.lint || analysis.configFiles.some(c=>c.file.includes('jest'))) {
+    testSection = `## 🧪 Testing\n\n\`\`\`bash${pkg.scripts?.test ? '\n# Run tests\nnpm test' : ''}${pkg.scripts?.lint ? '\n\n# Lint code\nnpm run lint' : ''}\n\`\`\`\n\n---\n\n`;
   }
-  faqEntries.push(`<details>
-<summary><strong>Environment variables not loading</strong></summary>
-<br>
-Make sure you have a <code>.env</code> file in the project root. Copy from <code>.env.example</code> if available.
-</details>`);
 
   return `<p align="center">
   <img src="https://img.icons8.com/fluency/96/markdown.png" alt="${name}" width="80" />
@@ -393,8 +608,7 @@ Make sure you have a <code>.env</code> file in the project root. Copy from <code
   <a href="#-key-features"><img src="https://img.shields.io/badge/✨_Features-0891b2?style=for-the-badge" alt="Features" /></a>&nbsp;
   <a href="#-tech-stack"><img src="https://img.shields.io/badge/⚙️_Tech_Stack-059669?style=for-the-badge" alt="Tech Stack" /></a>&nbsp;
   <a href="#-getting-started"><img src="https://img.shields.io/badge/🚀_Get_Started-dc2626?style=for-the-badge" alt="Get Started" /></a>&nbsp;
-  <a href="#-project-structure"><img src="https://img.shields.io/badge/📂_Structure-ca8a04?style=for-the-badge" alt="Structure" /></a>&nbsp;
-  <a href="#-contributing"><img src="https://img.shields.io/badge/🤝_Contribute-7c3aed?style=for-the-badge" alt="Contribute" /></a>
+  <a href="#-project-structure"><img src="https://img.shields.io/badge/📂_Structure-ca8a04?style=for-the-badge" alt="Structure" /></a>
 </p>
 
 <br />
@@ -409,9 +623,16 @@ Make sure you have a <code>.env</code> file in the project root. Copy from <code
 
 ## 📖 Overview
 
-**${name}** contains **${fileCount} files** across **${folders.size} directories**, built with ${snapshot.detectedStack.join(', ') || 'standard tooling'}.${pkg.description ? ' ' + pkg.description : ''} The most common file types are ${topExtensions || 'source files'}.
+**${name}** contains **${fileCount} files** across **${folders.size} directories**.
+Total Lines of Code: **${analysis.metrics.totalLoc}** lines.
+${Object.entries(analysis.metrics.locByLang).map(([ext, loc]) => `* \`${ext}\`: ${loc} lines`).join('\n')}
 
-${options.instructions ? `> 💡 ${options.instructions}\n` : ''}
+The most common file extensions are ${topExtensions || 'source files'}.
+
+## 🏗️ Architecture
+
+${architecture}${entryPointsMd}
+
 ---
 
 ## ✨ Key Features
@@ -428,20 +649,20 @@ ${techMatrixRows || '| *No specific frameworks detected* | — | — |'}
 
 ---
 
-## 📂 Project Structure
+${apiSection}${dbSection}## 📂 Project Structure
 
-\\\`\\\`\\\`text
+\`\`\`text
 ${name}/
 ${topTree}
-\\\`\\\`\\\`
+\`\`\`
 
 | Directory | Purpose |
 | :--- | :--- |
 ${directoryRows}
-
+${projectStructureExtra}
 ---
 
-${scriptsSection}${depsSection}## 🚀 Getting Started
+${compSection}${expSection}${configSection}${cicdSection}${scriptsSection}${depsSection}## 🚀 Getting Started
 
 ### Prerequisites
 
@@ -450,46 +671,35 @@ ${prereqs.join('\n')}
 ### Setup
 
 1. **Clone the repo**
-   \\\`\\\`\\\`bash
+   \`\`\`bash
    git clone <repository-url>
    cd ${name}
-   \\\`\\\`\\\`
+   \`\`\`
 
 2. **Install dependencies**
-   \\\`\\\`\\\`bash
+   \`\`\`bash
    ${installCmd}
-   \\\`\\\`\\\`
+   \`\`\`
 
 3. **Set up environment** (if applicable)
-   \\\`\\\`\\\`bash
+   \`\`\`bash
    cp .env.example .env
    # Edit .env with your values
-   \\\`\\\`\\\`
+   \`\`\`
 
 4. **Run in development**
-   \\\`\\\`\\\`bash
+   \`\`\`bash
    ${devCmd}
-   \\\`\\\`\\\`
+   \`\`\`
 
 5. **Build for production**
-   \\\`\\\`\\\`bash
+   \`\`\`bash
    ${buildCmd}
-   \\\`\\\`\\\`
+   \`\`\`
 
 ---
 
-${envSection}
-
----
-${pkg.scripts?.test || pkg.scripts?.lint ? `
-## 🧪 Testing & Quality
-
-\\\`\\\`\\\`bash${pkg.scripts?.test ? '\n# Run tests\nnpm test' : ''}${pkg.scripts?.lint ? '\n\n# Lint code\nnpm run lint' : ''}${pkg.scripts?.typecheck ? '\n\n# Type check\nnpm run typecheck' : ''}
-\\\`\\\`\\\`
-
----
-` : ''}
-## ❓ Troubleshooting
+${envSection}${testSection}## ❓ Troubleshooting
 
 ${faqEntries.join('\n\n')}
 
@@ -498,9 +708,9 @@ ${faqEntries.join('\n\n')}
 ## 🤝 Contributing
 
 1. Fork the repo
-2. Create a branch (\\\`git checkout -b feature/my-feature\\\`)
-3. Commit changes (\\\`git commit -m "Add my feature"\\\`)
-4. Push (\\\`git push origin feature/my-feature\\\`)
+2. Create a branch (\`git checkout -b feature/my-feature\`)
+3. Commit changes (\`git commit -m "Add my feature"\`)
+4. Push (\`git push origin feature/my-feature\`)
 5. Open a Pull Request
 
 ---
