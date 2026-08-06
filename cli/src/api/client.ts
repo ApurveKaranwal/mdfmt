@@ -168,15 +168,30 @@ const FLAT_SQUARE_BADGES: Record<string, string> = {
 function generateFallbackReadme(snapshot: RepositorySnapshot, options: GenerateOptions): string {
   const pkg = (snapshot.packageManifests[0] as any) || {};
   const name = options.projectName || pkg.name || snapshot.repo;
-  const description =
-    pkg.description ||
-    `A high-performance, modular software application built with ${
-      snapshot.detectedStack.join(', ') || 'clean architectural patterns'
-    }. Built for production reliability, developer clarity, and scalable maintenance.`;
   const version = pkg.version ? `v${pkg.version}` : 'v1.0.0';
   const license = pkg.license || 'MIT';
 
-  // Badges matching mdfmt website styling
+  // --- Derive real data from the scan ---
+  const fileCount = snapshot.fileTree.length;
+  const folders = new Set<string>();
+  const extensions = new Map<string, number>();
+  snapshot.fileTree.forEach((f) => {
+    const parts = f.split('/');
+    if (parts.length > 1) folders.add(parts[0]);
+    const ext = f.includes('.') ? '.' + f.split('.').pop()! : '';
+    if (ext) extensions.set(ext, (extensions.get(ext) || 0) + 1);
+  });
+  const topExtensions = [...extensions.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6)
+    .map(([ext, count]) => `\`${ext}\` (${count})`)
+    .join(', ');
+
+  // Description — use real data
+  const description = pkg.description ||
+    `${name} is a ${snapshot.detectedStack.slice(0, 3).join('/') || 'software'} project containing ${fileCount} source files across ${folders.size} directories.`;
+
+  // Badges
   const techBadges = snapshot.detectedStack
     .map((tech) => {
       const badgeUrl = FLAT_SQUARE_BADGES[tech] || `https://img.shields.io/badge/-${encodeURIComponent(tech)}-4f46e5?style=flat-square`;
@@ -184,28 +199,39 @@ function generateFallbackReadme(snapshot: RepositorySnapshot, options: GenerateO
     })
     .join(' ');
 
-  // Directory Tree & Guide
-  const topTree = snapshot.fileTree.slice(0, 20).map((f) => `├── ${f}`).join('\n');
+  // Directory tree (show up to 40 files with proper nesting)
+  const treeLines: string[] = [];
+  const shownFiles = snapshot.fileTree.slice(0, 40);
+  shownFiles.forEach((f, i) => {
+    const connector = i === shownFiles.length - 1 && snapshot.fileTree.length <= 40 ? '└──' : '├──';
+    treeLines.push(`${connector} ${f}`);
+  });
+  if (snapshot.fileTree.length > 40) {
+    treeLines.push(`└── ... (${snapshot.fileTree.length - 40} more files)`);
+  }
+  const topTree = treeLines.join('\n');
+
+  // Directory table
   const directoryRows = generateDirectoryTableRows(snapshot.fileTree);
 
-  // Tech Matrix Table
+  // Tech Matrix
   const techMatrixRows = snapshot.detectedStack
     .filter((t) => TECH_CATEGORIES[t])
     .map((t) => `| **${t}** | \`${TECH_CATEGORIES[t].category}\` | ${TECH_CATEGORIES[t].desc} |`)
     .join('\n');
 
-  // Scripts table if package.json has scripts
+  // Scripts table
   let scriptsSection = '';
   if (pkg.scripts && Object.keys(pkg.scripts).length > 0) {
     const rows = Object.entries(pkg.scripts)
       .map(([cmd, script]) => {
-        const action = SCRIPT_DESCRIPTIONS[cmd.toLowerCase()] || `Executes script: \`${script}\``;
+        const action = SCRIPT_DESCRIPTIONS[cmd.toLowerCase()] || `Runs: \`${script}\``;
         return `| \`npm run ${cmd}\` | \`${script}\` | ${action} |`;
       })
       .join('\n');
-    scriptsSection = `## 📜 Available Scripts Reference
+    scriptsSection = `## 📜 Available Scripts
 
-| Command | Executed Command | Description |
+| Command | Script | What it does |
 | :--- | :--- | :--- |
 ${rows}
 
@@ -214,8 +240,144 @@ ${rows}
 `;
   }
 
+  // Dependencies section — list actual deps from package.json
+  let depsSection = '';
+  if (pkg.dependencies && Object.keys(pkg.dependencies).length > 0) {
+    const depEntries = Object.entries(pkg.dependencies as Record<string, string>);
+    const depRows = depEntries.slice(0, 20).map(([dep, ver]) => `| \`${dep}\` | \`${ver}\` |`).join('\n');
+    depsSection = `## 📦 Dependencies
+
+| Package | Version |
+| :--- | :--- |
+${depRows}
+${depEntries.length > 20 ? `\n*... and ${depEntries.length - 20} more. See [\`package.json\`](./package.json) for the full list.*\n` : ''}
+`;
+    if (pkg.devDependencies && Object.keys(pkg.devDependencies).length > 0) {
+      const devEntries = Object.entries(pkg.devDependencies as Record<string, string>);
+      const devRows = devEntries.slice(0, 10).map(([dep, ver]) => `| \`${dep}\` | \`${ver}\` |`).join('\n');
+      depsSection += `
+### Dev Dependencies
+
+| Package | Version |
+| :--- | :--- |
+${devRows}
+${devEntries.length > 10 ? `\n*... and ${devEntries.length - 10} more.*\n` : ''}
+`;
+    }
+    depsSection += '\n---\n\n';
+  }
+
+  // Features — derived from actual scan data, not hardcoded
+  const features: string[] = [];
+  if (folders.size >= 3) features.push(`- 📁 **${folders.size} Organized Modules** — code is split across \`${[...folders].slice(0, 4).join('/\`, \`')}/\` and more, keeping concerns separated.`);
+  if (snapshot.detectedStack.includes('TypeScript')) features.push('- 🛡️ **TypeScript** — full static typing across the codebase for compile-time safety and editor autocomplete.');
+  if (snapshot.detectedStack.includes('React') || snapshot.detectedStack.includes('Vue') || snapshot.detectedStack.includes('Angular')) features.push(`- ⚛️ **${snapshot.detectedStack.find(s => ['React','Vue','Angular'].includes(s))} Frontend** — component-based UI with reactive state management.`);
+  if (snapshot.detectedStack.includes('Express') || snapshot.detectedStack.includes('Fastify')) features.push('- 🌐 **REST API Backend** — Express/Fastify server with route handlers and middleware.');
+  if (snapshot.detectedStack.includes('Docker')) features.push('- 🐳 **Docker** — containerized for consistent dev/prod environments.');
+  if (snapshot.detectedStack.includes('TailwindCSS')) features.push('- 🎨 **TailwindCSS** — utility-first CSS framework for rapid UI development.');
+  if (snapshot.detectedStack.includes('Prisma')) features.push('- 🗄️ **Prisma ORM** — type-safe database access with auto-generated client.');
+  if (pkg.scripts?.test || pkg.scripts?.['test:unit']) features.push('- 🧪 **Test Suite** — automated tests configured via `npm test`.');
+  if (pkg.scripts?.lint || pkg.scripts?.format) features.push('- ✨ **Linting & Formatting** — code quality enforced with linter/formatter scripts.');
+  if (features.length === 0) {
+    features.push(`- 📄 **${fileCount} Source Files** — organized across ${folders.size} directories.`);
+    features.push(`- 🔧 **File Types** — ${topExtensions || 'various source files'}.`);
+  }
+
+  // Env vars — try to detect from actual .env files or common patterns
+  const envVars: string[] = [];
+  snapshot.files.forEach((f) => {
+    if (f.path.includes('.env.example') || f.path.includes('.env.sample')) {
+      f.content.split('\n').forEach((line) => {
+        const match = line.match(/^([A-Z_][A-Z0-9_]*)=/);
+        if (match) envVars.push(match[1]);
+      });
+    }
+  });
+  let envSection: string;
+  if (envVars.length > 0) {
+    const envRows = [...new Set(envVars)].slice(0, 12).map((v) => `| \`${v}\` | — | See \`.env.example\` |`).join('\n');
+    envSection = `## 🔧 Environment Variables
+
+Variables detected from \`.env.example\`:
+
+| Variable | Default | Description |
+| :--- | :--- | :--- |
+${envRows}
+
+Copy the example file and fill in your values:
+
+\\\`\\\`\\\`bash
+cp .env.example .env
+\\\`\\\`\\\``;
+  } else {
+    envSection = `## 🔧 Configuration
+
+If the project uses environment variables, create a \`.env\` file in the project root:
+
+\\\`\\\`\\\`bash
+cp .env.example .env
+\\\`\\\`\\\`
+
+Edit the file and fill in any required values (API keys, database URLs, etc.).`;
+  }
+
+  // Prerequisites — only list what's actually detected
+  const prereqs: string[] = [];
+  if (snapshot.detectedStack.includes('Node.js')) prereqs.push('- **Node.js** v18+ and **npm** (or yarn/pnpm)');
+  if (snapshot.detectedStack.includes('Python')) prereqs.push('- **Python** 3.9+');
+  if (snapshot.detectedStack.includes('Rust')) prereqs.push('- **Rust** (latest stable via `rustup`)');
+  if (snapshot.detectedStack.includes('Go')) prereqs.push('- **Go** 1.20+');
+  if (snapshot.detectedStack.includes('Docker')) prereqs.push('- **Docker** and **Docker Compose**');
+  prereqs.push('- **Git**');
+
+  // Install steps — derive from actual scripts
+  const installCmd = snapshot.detectedStack.includes('Node.js') ? 'npm install' :
+    snapshot.detectedStack.includes('Python') ? 'pip install -r requirements.txt' :
+    snapshot.detectedStack.includes('Rust') ? 'cargo build' :
+    snapshot.detectedStack.includes('Go') ? 'go mod download' : '# Install dependencies';
+  const devCmd = pkg.scripts?.dev ? 'npm run dev' :
+    pkg.scripts?.start ? 'npm start' :
+    snapshot.detectedStack.includes('Python') ? 'python main.py' : '# Start the application';
+  const buildCmd = pkg.scripts?.build ? 'npm run build' : '# Build for production';
+
+  // Troubleshooting — more entries, based on stack
+  const faqEntries: string[] = [];
+  if (snapshot.detectedStack.includes('Node.js')) {
+    faqEntries.push(`<details>
+<summary><strong>npm install fails or modules are missing</strong></summary>
+<br>
+Delete <code>node_modules</code> and the lockfile, then reinstall:
+
+\\\`\\\`\\\`bash
+rm -rf node_modules package-lock.json
+npm install
+\\\`\\\`\\\`
+
+Make sure you are on Node.js v18 or higher: <code>node --version</code>.
+</details>`);
+  }
+  if (pkg.scripts?.dev || pkg.scripts?.start) {
+    faqEntries.push(`<details>
+<summary><strong>Port already in use</strong></summary>
+<br>
+Another process is using the same port. Either stop it or change the port in your <code>.env</code> file.
+</details>`);
+  }
+  if (snapshot.detectedStack.includes('TypeScript')) {
+    faqEntries.push(`<details>
+<summary><strong>TypeScript errors after pulling new changes</strong></summary>
+<br>
+Run <code>npm install</code> to pick up any new dependencies, then <code>npx tsc --noEmit</code> to check types.
+</details>`);
+  }
+  faqEntries.push(`<details>
+<summary><strong>Environment variables not loading</strong></summary>
+<br>
+Make sure you have a <code>.env</code> file in the project root. Copy from <code>.env.example</code> if available.
+</details>`);
+
   return `<p align="center">
-  <img src="https://img.icons8.com/fluency/96/markdown.png" alt="mdfmt logo" width="80" />
+  <img src="https://img.icons8.com/fluency/96/markdown.png" alt="${name}" width="80" />
 </p>
 
 <h1 align="center">${name}</h1>
@@ -224,18 +386,14 @@ ${rows}
   <strong>${description}</strong>
 </p>
 
-<p align="center">
-  <em>Modern, scalable software repository built with ${snapshot.detectedStack.join(', ') || 'clean architecture'}.</em>
-</p>
-
 <br />
 
 <p align="center">
   <a href="#-overview"><img src="https://img.shields.io/badge/📖_Overview-4f46e5?style=for-the-badge" alt="Overview" /></a>&nbsp;
-  <a href="#-key-technical-features"><img src="https://img.shields.io/badge/✨_Features-0891b2?style=for-the-badge" alt="Features" /></a>&nbsp;
-  <a href="#-tech-stack-architecture"><img src="https://img.shields.io/badge/⚙️_Tech_Stack-059669?style=for-the-badge" alt="Tech Stack" /></a>&nbsp;
-  <a href="#-getting-started--installation"><img src="https://img.shields.io/badge/🚀_Get_Started-dc2626?style=for-the-badge" alt="Get Started" /></a>&nbsp;
-  <a href="#-directory-structure--module-guide"><img src="https://img.shields.io/badge/📂_Structure-ca8a04?style=for-the-badge" alt="Structure" /></a>&nbsp;
+  <a href="#-key-features"><img src="https://img.shields.io/badge/✨_Features-0891b2?style=for-the-badge" alt="Features" /></a>&nbsp;
+  <a href="#-tech-stack"><img src="https://img.shields.io/badge/⚙️_Tech_Stack-059669?style=for-the-badge" alt="Tech Stack" /></a>&nbsp;
+  <a href="#-getting-started"><img src="https://img.shields.io/badge/🚀_Get_Started-dc2626?style=for-the-badge" alt="Get Started" /></a>&nbsp;
+  <a href="#-project-structure"><img src="https://img.shields.io/badge/📂_Structure-ca8a04?style=for-the-badge" alt="Structure" /></a>&nbsp;
   <a href="#-contributing"><img src="https://img.shields.io/badge/🤝_Contribute-7c3aed?style=for-the-badge" alt="Contribute" /></a>
 </p>
 
@@ -249,167 +407,112 @@ ${rows}
 
 ---
 
-## 📋 Table of Contents
-
-- [Overview](#-overview)
-- [✨ Key Technical Features](#-key-technical-features)
-- [⚙️ Tech Stack Architecture](#️-tech-stack-architecture)
-- [📂 Directory Structure & Module Guide](#-directory-structure--module-guide)
-${scriptsSection ? '- [📜 Available Scripts Reference](#-available-scripts-reference)\n' : ''}- [🚀 Getting Started & Installation](#-getting-started--installation)
-  - [Prerequisites](#prerequisites)
-  - [Step-by-Step Setup](#step-by-step-setup)
-- [🔧 Configuration & Environment Variables](#-configuration--environment-variables)
-- [🧪 Testing & Quality Assurance](#-testing--quality-assurance)
-- [❓ Troubleshooting & FAQ](#-troubleshooting--faq)
-- [🤝 Contributing](#-contributing)
-- [📄 License](#-license)
-
----
-
 ## 📖 Overview
 
-**${name}** is engineered to deliver a structured, scalable, and maintainable codebase. It decouples business logic from presentation layers, enforcing clean software design principles across modules.
+**${name}** contains **${fileCount} files** across **${folders.size} directories**, built with ${snapshot.detectedStack.join(', ') || 'standard tooling'}.${pkg.description ? ' ' + pkg.description : ''} The most common file types are ${topExtensions || 'source files'}.
 
-${options.instructions ? `\n> 💡 **Developer Focus & Instructions**: ${options.instructions}\n` : ''}
+${options.instructions ? `> 💡 ${options.instructions}\n` : ''}
+---
+
+## ✨ Key Features
+
+${features.join('\n')}
 
 ---
 
-## ✨ Key Technical Features
+## ⚙️ Tech Stack
 
-- 🧩 **Modular Architecture**: Decoupled folder structure allowing seamless scalability and component reusability.
-- 🔒 **Privacy & Secret Redaction**: Native sanitization rules preventing accidental credential or environment token leaks.
-- ⚡ **Optimized Developer Workflow**: Pre-configured scripts for local development, hot-reloading, typechecking, and production builds.
-${snapshot.detectedStack.includes('TypeScript') ? '- 🛡️ **End-to-End Type Safety**: Complete TypeScript definitions ensuring compile-time bug prevention.\n' : ''}${snapshot.detectedStack.includes('Docker') ? '- 🐳 **Containerized Workflows**: Docker container configs for consistent development and deployment.\n' : ''}
-
----
-
-## ⚙️ Tech Stack Architecture
-
-| Technology | Category | Role in Repository |
+| Technology | Category | Role |
 | :--- | :--- | :--- |
-${techMatrixRows || '| **Node.js** | `Runtime` | Application execution environment. |'}
+${techMatrixRows || '| *No specific frameworks detected* | — | — |'}
 
 ---
 
-## 📂 Directory Structure & Module Guide
+## 📂 Project Structure
 
-\`\`\`text
+\\\`\\\`\\\`text
 ${name}/
 ${topTree}
-${snapshot.fileTree.length > 20 ? `└── ... (${snapshot.fileTree.length - 20} additional files)` : ''}
-\`\`\`
+\\\`\\\`\\\`
 
-### Directory Breakdown
-
-| Directory / File | Description & Purpose |
+| Directory | Purpose |
 | :--- | :--- |
 ${directoryRows}
 
 ---
 
-${scriptsSection}## 🚀 Getting Started & Installation
+${scriptsSection}${depsSection}## 🚀 Getting Started
 
 ### Prerequisites
 
-Ensure your environment meets the following software requirements before proceeding:
-${snapshot.detectedStack.includes('Node.js') ? '- **Node.js**: v18.0.0 or higher\n- **Package Manager**: npm (v9+), yarn, or pnpm' : ''}
-${snapshot.detectedStack.includes('Python') ? '- **Python**: v3.9 or higher' : ''}
-${snapshot.detectedStack.includes('Rust') ? '- **Rust / Cargo**: latest stable' : ''}
-${snapshot.detectedStack.includes('Go') ? '- **Go**: v1.20 or higher' : ''}
-- **Git**: v2.25+
+${prereqs.join('\n')}
 
-### Step-by-Step Setup
+### Setup
 
-1. **Clone the Repository**:
-   \`\`\`bash
+1. **Clone the repo**
+   \\\`\\\`\\\`bash
    git clone <repository-url>
    cd ${name}
-   \`\`\`
+   \\\`\\\`\\\`
 
-2. **Install Project Dependencies**:
-   \`\`\`bash
-   ${snapshot.detectedStack.includes('Node.js') ? 'npm install' : '# Install dependencies'}
-   \`\`\`
+2. **Install dependencies**
+   \\\`\\\`\\\`bash
+   ${installCmd}
+   \\\`\\\`\\\`
 
-3. **Configure Environment Variables**:
-   \`\`\`bash
+3. **Set up environment** (if applicable)
+   \\\`\\\`\\\`bash
    cp .env.example .env
-   \`\`\`
+   # Edit .env with your values
+   \\\`\\\`\\\`
 
-4. **Start Development Environment**:
-   \`\`\`bash
-   ${pkg.scripts?.dev ? 'npm run dev' : pkg.scripts?.start ? 'npm start' : '# Run application'}
-   \`\`\`
+4. **Run in development**
+   \\\`\\\`\\\`bash
+   ${devCmd}
+   \\\`\\\`\\\`
 
-5. **Build for Production**:
-   \`\`\`bash
-   ${pkg.scripts?.build ? 'npm run build' : '# Compile production build'}
-   \`\`\`
-
----
-
-## 🔧 Configuration & Environment Variables
-
-Configure application settings in your local \`.env\` file:
-
-| Variable | Type | Required | Default | Description |
-| :--- | :--- | :--- | :--- | :--- |
-| \`PORT\` | Number | No | \`5000\` | HTTP server listening port |
-| \`NODE_ENV\` | String | No | \`development\` | Application runtime environment (\`development\` / \`production\`) |
-| \`DATABASE_URL\` | String | Optional | - | Relational or document database connection string |
+5. **Build for production**
+   \\\`\\\`\\\`bash
+   ${buildCmd}
+   \\\`\\\`\\\`
 
 ---
 
-## 🧪 Testing & Quality Assurance
-
-Run type checking and linting standards to verify code quality:
-
-\`\`\`bash
-# Type check TypeScript definitions
-${pkg.scripts?.typecheck ? 'npm run typecheck' : 'npx tsc --noEmit'}
-
-# Run code linter
-${pkg.scripts?.lint ? 'npm run lint' : 'npm test'}
-\`\`\`
+${envSection}
 
 ---
+${pkg.scripts?.test || pkg.scripts?.lint ? `
+## 🧪 Testing & Quality
 
-## ❓ Troubleshooting & FAQ
+\\\`\\\`\\\`bash${pkg.scripts?.test ? '\n# Run tests\nnpm test' : ''}${pkg.scripts?.lint ? '\n\n# Lint code\nnpm run lint' : ''}${pkg.scripts?.typecheck ? '\n\n# Type check\nnpm run typecheck' : ''}
+\\\`\\\`\\\`
 
-<details>
-<summary><strong>Q: Server fails to start due to port binding errors?</strong></summary>
-<br>
-<strong>A:</strong> Ensure port <code>5000</code> (or your custom <code>PORT</code> variable in <code>.env</code>) is not being used by another process. Kill conflicting processes or update <code>PORT=5001</code> in <code>.env</code>.
-</details>
+---
+` : ''}
+## ❓ Troubleshooting
 
-<details>
-<summary><strong>Q: TypeScript compilation or missing module errors?</strong></summary>
-<br>
-<strong>A:</strong> Delete your <code>node_modules</code> directory and lockfile, then re-run <code>npm install</code>. Ensure Node.js version is <code>v18+</code>.
-</details>
+${faqEntries.join('\n\n')}
 
 ---
 
 ## 🤝 Contributing
 
-We welcome community contributions! Please follow these guidelines:
-
-1. Fork the Repository
-2. Create a Feature Branch (\`git checkout -b feature/AmazingFeature\`)
-3. Commit your Changes (\`git commit -m 'Add AmazingFeature'\`)
-4. Push to the Branch (\`git push origin feature/AmazingFeature\`)
-5. Open a Pull Request for code review
+1. Fork the repo
+2. Create a branch (\\\`git checkout -b feature/my-feature\\\`)
+3. Commit changes (\\\`git commit -m "Add my feature"\\\`)
+4. Push (\\\`git push origin feature/my-feature\\\`)
+5. Open a Pull Request
 
 ---
 
 ## 📄 License
 
-Distributed under the **${license}** License.
+${license} — see [\`LICENSE\`](./LICENSE) for details.
 
 ---
 
 <p align="center">
-  <sub>Generated with ❤️ using <a href="https://github.com/ApurveKaranwal/mdfmt">mdfmt — README Studio</a></sub>
+  <sub>Generated with <a href="https://github.com/ApurveKaranwal/mdfmt">mdfmt</a></sub>
 </p>
 `;
 }
