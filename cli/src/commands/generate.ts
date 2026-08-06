@@ -16,7 +16,14 @@ export interface GenerateCmdFlags {
 }
 
 export async function runGenerateCommand(flags: GenerateCmdFlags = {}) {
-  intro(picocolors.bgCyan(picocolors.black(' mdfmt — README Studio CLI ')));
+  console.log(
+    picocolors.cyan(`
+  ___  ___   __| |/ _| |_   ${picocolors.bold(picocolors.magenta('mdfmt — README Studio CLI'))}
+ | ' \`/ _ \\ / _\` | |_| __|  ${picocolors.dim('AI-Powered Markdown & Documentation Engine')}
+ |_|_|\\___/ \\__,_|_|  \\__|  ${picocolors.cyan('https://mdfmt.dev')}
+`)
+  );
+  intro(picocolors.bgMagenta(picocolors.white(' ✨ mdfmt — Interactive Documentation Wizard ')));
 
   const s = spinner();
   s.start('Analyzing workspace & repository files...');

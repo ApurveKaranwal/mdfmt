@@ -149,6 +149,22 @@ const SCRIPT_DESCRIPTIONS: Record<string, string> = {
   format: 'Auto-formats source code files according to project standards.'
 };
 
+const FLAT_SQUARE_BADGES: Record<string, string> = {
+  TypeScript: 'https://img.shields.io/badge/TypeScript-5.9-3178c6?style=flat-square&logo=typescript&logoColor=white',
+  JavaScript: 'https://img.shields.io/badge/JavaScript-ES6+-f7df1e?style=flat-square&logo=javascript&logoColor=black',
+  React: 'https://img.shields.io/badge/React-19.2-61dafb?style=flat-square&logo=react&logoColor=white',
+  'Next.js': 'https://img.shields.io/badge/Next.js-15.0-000000?style=flat-square&logo=next.js&logoColor=white',
+  Express: 'https://img.shields.io/badge/Express-5.0-000000?style=flat-square&logo=express&logoColor=white',
+  'Node.js': 'https://img.shields.io/badge/Node.js-20.0-339933?style=flat-square&logo=node.js&logoColor=white',
+  Python: 'https://img.shields.io/badge/Python-3.11-3776ab?style=flat-square&logo=python&logoColor=white',
+  Rust: 'https://img.shields.io/badge/Rust-1.80-000000?style=flat-square&logo=rust&logoColor=white',
+  Go: 'https://img.shields.io/badge/Go-1.22-00add8?style=flat-square&logo=go&logoColor=white',
+  Docker: 'https://img.shields.io/badge/Docker-24.0-2496ed?style=flat-square&logo=docker&logoColor=white',
+  TailwindCSS: 'https://img.shields.io/badge/TailwindCSS-3.4-06b6d4?style=flat-square&logo=tailwindcss&logoColor=white',
+  Prisma: 'https://img.shields.io/badge/Prisma-5.0-2d3748?style=flat-square&logo=prisma&logoColor=white',
+  Vite: 'https://img.shields.io/badge/Vite-6.0-646cff?style=flat-square&logo=vite&logoColor=white'
+};
+
 function generateFallbackReadme(snapshot: RepositorySnapshot, options: GenerateOptions): string {
   const pkg = (snapshot.packageManifests[0] as any) || {};
   const name = options.projectName || pkg.name || snapshot.repo;
@@ -160,14 +176,13 @@ function generateFallbackReadme(snapshot: RepositorySnapshot, options: GenerateO
   const version = pkg.version ? `v${pkg.version}` : 'v1.0.0';
   const license = pkg.license || 'MIT';
 
-  // Badges
-  const badges = [
-    `![Version](https://img.shields.io/badge/version-${encodeURIComponent(version)}-blue.svg?style=flat-square)`,
-    `![License](https://img.shields.io/badge/license-${encodeURIComponent(license)}-22c55e.svg?style=flat-square)`,
-    ...snapshot.detectedStack.map(
-      (tech) => `![${tech}](https://img.shields.io/badge/-${encodeURIComponent(tech)}-4f46e5?style=flat-square)`
-    )
-  ].join(' ');
+  // Badges matching mdfmt website styling
+  const techBadges = snapshot.detectedStack
+    .map((tech) => {
+      const badgeUrl = FLAT_SQUARE_BADGES[tech] || `https://img.shields.io/badge/-${encodeURIComponent(tech)}-4f46e5?style=flat-square`;
+      return `<img src="${badgeUrl}" alt="${tech}" />`;
+    })
+    .join(' ');
 
   // Directory Tree & Guide
   const topTree = snapshot.fileTree.slice(0, 20).map((f) => `├── ${f}`).join('\n');
@@ -200,15 +215,36 @@ ${rows}
   }
 
   return `<p align="center">
-  <h1 align="center">${name}</h1>
+  <img src="https://img.icons8.com/fluency/96/markdown.png" alt="mdfmt logo" width="80" />
+</p>
+
+<h1 align="center">${name}</h1>
+
+<p align="center">
+  <strong>${description}</strong>
 </p>
 
 <p align="center">
-  <em>${description}</em>
+  <em>Modern, scalable software repository built with ${snapshot.detectedStack.join(', ') || 'clean architecture'}.</em>
 </p>
 
+<br />
+
 <p align="center">
-  ${badges}
+  <a href="#-overview"><img src="https://img.shields.io/badge/📖_Overview-4f46e5?style=for-the-badge" alt="Overview" /></a>&nbsp;
+  <a href="#-key-technical-features"><img src="https://img.shields.io/badge/✨_Features-0891b2?style=for-the-badge" alt="Features" /></a>&nbsp;
+  <a href="#-tech-stack-architecture"><img src="https://img.shields.io/badge/⚙️_Tech_Stack-059669?style=for-the-badge" alt="Tech Stack" /></a>&nbsp;
+  <a href="#-getting-started--installation"><img src="https://img.shields.io/badge/🚀_Get_Started-dc2626?style=for-the-badge" alt="Get Started" /></a>&nbsp;
+  <a href="#-directory-structure--module-guide"><img src="https://img.shields.io/badge/📂_Structure-ca8a04?style=for-the-badge" alt="Structure" /></a>&nbsp;
+  <a href="#-contributing"><img src="https://img.shields.io/badge/🤝_Contribute-7c3aed?style=for-the-badge" alt="Contribute" /></a>
+</p>
+
+<br />
+
+<p align="center">
+  ${techBadges}
+  <img src="https://img.shields.io/badge/Version-${encodeURIComponent(version)}-3178c6?style=flat-square" alt="Version" />
+  <img src="https://img.shields.io/badge/License-${encodeURIComponent(license)}-22c55e?style=flat-square" alt="License" />
 </p>
 
 ---
