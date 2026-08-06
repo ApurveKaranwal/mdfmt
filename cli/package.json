@@ -1,0 +1,40 @@
+{
+  "name": "mdfmt",
+  "version": "1.0.0",
+  "description": "CLI tool for mdfmt — AI-powered README generation for local repositories in VS Code and Terminal",
+  "main": "dist/index.js",
+  "bin": {
+    "mdfmt": "./bin/mdfmt.js"
+  },
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "start": "node bin/mdfmt.js"
+  },
+  "keywords": [
+    "markdown",
+    "readme",
+    "cli",
+    "vscode",
+    "documentation",
+    "ai",
+    "mdfmt"
+  ],
+  "author": "mdfmt team",
+  "license": "MIT",
+  "dependencies": {
+    "@clack/prompts": "^0.8.2",
+    "commander": "^12.1.0",
+    "dotenv": "^16.4.7",
+    "fs-extra": "^11.2.0",
+    "ignore": "^6.0.2",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.17.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -2,7 +2,7 @@ import { Router } from "express";
 import { generateDocumentation, reviseDocumentation } from "../services/aiService";
 import { createRepositorySnapshot } from "../services/githubService";
 import { approveFiles, createJob, getJob, getRecentJobs, setJobStatus, setRepository, setResult } from "../services/jobStore";
-import type { BuildAiRequest, DocumentationDepth, DocumentationFile } from "../types";
+import type { BuildAiRequest, DocumentationDepth, DocumentationFile, RepositorySnapshot } from "../types";
 import { asyncHandler } from "../utils/asyncHandler";
 import { HttpError, assertValidString } from "../utils/httpErrors";
 
@@ -61,7 +61,40 @@ router.post(
 
     await runGenerationJob(job.id);
     const finalJob = await getExistingJob(job.id);
-    res.status(finalJob.status === "failed" ? 500 : 201).json({ job: await getPublicJob(job.id) });
+    res.status(finalJob.status === "failed" ? 500 : 201).json({ job: await getPublicJob(finalJob.id) });
+  }),
+);
+
+router.post(
+  "/cli/generate-local",
+  asyncHandler(async (req, res) => {
+    const { repository, projectName, groqApiKey, instructions, documentationDepth } = req.body || {};
+
+    if (!repository || typeof repository !== "object") {
+      throw new HttpError(400, "Repository snapshot payload is required.");
+    }
+
+    const buildRequest: BuildAiRequest = {
+      projectName: projectName || repository.repo || "Local Project",
+      githubUrl: repository.githubUrl || "local://repo",
+      groqApiKey: typeof groqApiKey === "string" ? groqApiKey.trim() : undefined,
+      instructions: typeof instructions === "string" ? instructions.trim() : undefined,
+      documentationDepth: documentationDepth || "standard",
+    };
+
+    const repoSnapshot: RepositorySnapshot = {
+      owner: repository.owner || "local",
+      repo: repository.repo || projectName || "repo",
+      defaultBranch: repository.defaultBranch || "main",
+      githubUrl: repository.githubUrl || "local://repo",
+      fileTree: Array.isArray(repository.fileTree) ? repository.fileTree : [],
+      files: Array.isArray(repository.files) ? repository.files : [],
+      packageManifests: Array.isArray(repository.packageManifests) ? repository.packageManifests : [],
+      detectedStack: Array.isArray(repository.detectedStack) ? repository.detectedStack : [],
+    };
+
+    const result = await generateDocumentation(buildRequest, repoSnapshot);
+    res.status(200).json({ result });
   }),
 );
 
