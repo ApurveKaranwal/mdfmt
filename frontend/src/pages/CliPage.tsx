@@ -10,12 +10,17 @@ import {
   Laptop,
   CheckCircle2,
   Zap,
-  Code2
+  Code2,
+  Eye,
+  FileText,
+  GitCompare,
+  Layers
 } from 'lucide-react';
 
 export default function CliPage() {
   const [copiedCmd, setCopiedCmd] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'quick' | 'commands' | 'flags' | 'local'>('quick');
+  const [simTab, setSimTab] = useState<'console' | 'preview' | 'diff'>('console');
 
   const copyToClipboard = (cmd: string) => {
     navigator.clipboard.writeText(cmd);
@@ -92,7 +97,7 @@ export default function CliPage() {
           </h1>
 
           <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
-            Run <code className="text-indigo-600 dark:text-indigo-400 font-mono font-semibold">npx mdfmt</code> in any repository to scan files, detect tech stacks, format package scripts, and write human-like README documentation in seconds.
+            Run <code className="text-indigo-600 dark:text-indigo-400 font-mono font-semibold">npx mdfmt</code> in any repository to scan files, detect tech stacks, format package scripts, and write human-like README documentation matching mdfmt visual editor.
           </p>
 
           {/* QUICK COMMAND BAR */}
@@ -131,59 +136,194 @@ export default function CliPage() {
           </div>
         </section>
 
-        {/* TERMINAL SIMULATOR COMPONENT */}
-        <section className="bg-slate-900 rounded-2xl border border-slate-800 shadow-2xl overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3 bg-slate-950 border-b border-slate-800">
+        {/* WEBSITE-MATCHING TERMINAL / README PREVIEW SIMULATOR */}
+        <section className="bg-slate-900/95 dark:bg-slate-900 rounded-2xl border border-indigo-500/30 shadow-2xl overflow-hidden ring-1 ring-indigo-500/20">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 py-3 bg-slate-950 border-b border-slate-800 gap-3">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-red-500/80" />
               <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
               <div className="w-3 h-3 rounded-full bg-green-500/80" />
-              <span className="ml-2 text-xs font-mono text-slate-400 flex items-center gap-1.5">
-                <Terminal className="w-3.5 h-3.5 text-indigo-400" /> bash — VS Code Integrated Terminal
+              <span className="ml-2 text-xs font-mono text-slate-300 flex items-center gap-1.5">
+                <Terminal className="w-3.5 h-3.5 text-indigo-400" /> mdfmt — Interactive CLI Simulator
               </span>
             </div>
-            <span className="text-xs font-mono text-slate-500">v1.0.0</span>
-          </div>
 
-          <div className="p-6 font-mono text-xs sm:text-sm text-slate-300 leading-relaxed space-y-3">
-            <div className="flex items-center gap-2 text-slate-100">
-              <span className="text-green-400">~/my-awesome-app</span>
-              <span className="text-indigo-400">$</span>
-              <span className="text-white font-bold">mdfmt generate --offline</span>
-            </div>
-
-            <div className="text-cyan-400 pt-1">
-              <span className="px-2 py-0.5 bg-indigo-600 text-white rounded text-xs font-bold mr-2">mdfmt</span>
-              README Studio CLI
-            </div>
-
-            <div className="text-slate-400 flex items-center gap-2">
-              <span className="text-green-400">✔</span>
-              <span>Analyzed workspace structure: <strong className="text-white">my-awesome-app</strong></span>
-              <span className="text-slate-500">(Node.js, TypeScript, React, TailwindCSS, Express)</span>
-            </div>
-
-            <div className="text-slate-400 flex items-center gap-2">
-              <span className="text-amber-400">ℹ</span>
-              <span>Generated using local engine (Instant 0.1s Offline Mode)</span>
-            </div>
-
-            <div className="p-3 bg-slate-950/80 border border-slate-800 rounded-lg text-xs space-y-1 text-slate-400">
-              <div className="text-indigo-400 font-semibold">--- Detailed Output Sections Created ---</div>
-              <div className="text-green-400">+ Title & Status Badges (Version, License, Tech Stack)</div>
-              <div className="text-green-400">+ 📋 Table of Contents & Overview Narrative</div>
-              <div className="text-green-400">+ ⚙️ Tech Stack Architecture Matrix Table</div>
-              <div className="text-green-400">+ 📂 Directory Breakdown & Module Guide Table</div>
-              <div className="text-green-400">+ 📜 Available Package Scripts Reference Table</div>
-              <div className="text-green-400">+ 🚀 Step-by-Step Installation & Setup Walkthrough</div>
-              <div className="text-green-400">+ 🔧 Environment Variables Reference Table</div>
-              <div className="text-green-400">+ ❓ Interactive Troubleshooting & FAQ Dropdowns</div>
-            </div>
-
-            <div className="text-green-400 font-semibold pt-1 flex items-center gap-2">
-              <span>🎉 Successfully generated README.md in local project root!</span>
+            {/* TAB SELECTOR */}
+            <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800">
+              <button
+                onClick={() => setSimTab('console')}
+                className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md transition-all ${
+                  simTab === 'console'
+                    ? 'bg-indigo-600 text-white shadow'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Terminal className="w-3 h-3" /> Console Output
+              </button>
+              <button
+                onClick={() => setSimTab('preview')}
+                className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md transition-all ${
+                  simTab === 'preview'
+                    ? 'bg-indigo-600 text-white shadow'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Eye className="w-3 h-3" /> Live README Preview
+              </button>
+              <button
+                onClick={() => setSimTab('diff')}
+                className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md transition-all ${
+                  simTab === 'diff'
+                    ? 'bg-indigo-600 text-white shadow'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <GitCompare className="w-3 h-3" /> Terminal Diff
+              </button>
             </div>
           </div>
+
+          {/* TAB 1: CONSOLE OUTPUT */}
+          {simTab === 'console' && (
+            <div className="p-6 font-mono text-xs sm:text-sm text-slate-300 leading-relaxed space-y-3">
+              <div className="text-cyan-400 pt-1 flex items-center gap-3">
+                <span className="px-2 py-0.5 bg-indigo-600 text-white rounded text-xs font-bold">mdfmt</span>
+                <span className="text-slate-300 font-bold">README Studio CLI — v1.0.0</span>
+              </div>
+
+              <div className="flex items-center gap-2 text-slate-100 pt-2">
+                <span className="text-green-400">~/my-awesome-app</span>
+                <span className="text-indigo-400">$</span>
+                <span className="text-white font-bold">mdfmt generate --offline</span>
+              </div>
+
+              <div className="text-slate-400 flex items-center gap-2">
+                <span className="text-green-400">✔</span>
+                <span>Analyzed workspace: <strong className="text-white">my-awesome-app</strong></span>
+                <span className="text-slate-500">(Node.js, TypeScript, React, TailwindCSS, Express)</span>
+              </div>
+
+              <div className="text-slate-400 flex items-center gap-2">
+                <span className="text-amber-400">⚡</span>
+                <span>Generated using mdfmt local engine (Instant 0.1s Offline Mode)</span>
+              </div>
+
+              <div className="p-4 bg-slate-950 border border-indigo-950 rounded-xl space-y-2 text-xs">
+                <div className="text-indigo-400 font-bold flex items-center gap-2">
+                  <Sparkles className="w-3.5 h-3.5" /> Generated Sections matching mdfmt Website Templates:
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-300 pt-1">
+                  <div>✦ Centered Brand Logo & Title Header</div>
+                  <div>✦ Custom Pills (<span className="text-indigo-400">for-the-badge</span>)</div>
+                  <div>✦ Tech Stack Matrix Table</div>
+                  <div>✦ Module Breakdown Table</div>
+                  <div>✦ Package Scripts Reference Table</div>
+                  <div>✦ Interactive Setup Guide</div>
+                  <div>✦ Environment Variables Table</div>
+                  <div>✦ Troubleshooting & FAQ</div>
+                </div>
+              </div>
+
+              <div className="text-green-400 font-semibold pt-2 flex items-center gap-2">
+                <span>🎉 Successfully generated README.md! Saved directly in local project root.</span>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: LIVE RENDERED PREVIEW (EXACT WEBSITE STYLING) */}
+          {simTab === 'preview' && (
+            <div className="p-8 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 max-h-[500px] overflow-y-auto space-y-6 text-sm">
+              <div className="text-center space-y-3 border-b border-slate-200 dark:border-slate-800 pb-6">
+                <img
+                  src="https://img.icons8.com/fluency/96/markdown.png"
+                  alt="mdfmt logo"
+                  className="w-16 h-16 mx-auto"
+                />
+                <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">my-awesome-app</h1>
+                <p className="text-slate-600 dark:text-slate-400 font-medium max-w-xl mx-auto">
+                  A modern, high-performance web platform built with Node.js, TypeScript, React, Express, and TailwindCSS.
+                </p>
+
+                {/* NAVIGATION BADGES */}
+                <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                  <span className="px-3 py-1 rounded bg-indigo-600 text-white font-bold text-xs shadow-sm">📖 Overview</span>
+                  <span className="px-3 py-1 rounded bg-cyan-600 text-white font-bold text-xs shadow-sm">✨ Features</span>
+                  <span className="px-3 py-1 rounded bg-emerald-600 text-white font-bold text-xs shadow-sm">⚙️ Tech Stack</span>
+                  <span className="px-3 py-1 rounded bg-red-600 text-white font-bold text-xs shadow-sm">🚀 Getting Started</span>
+                  <span className="px-3 py-1 rounded bg-amber-600 text-white font-bold text-xs shadow-sm">📂 Directory Guide</span>
+                </div>
+
+                {/* TECH SHIELDS */}
+                <div className="flex flex-wrap items-center justify-center gap-1.5 pt-2">
+                  <img src="https://img.shields.io/badge/TypeScript-5.9-3178c6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
+                  <img src="https://img.shields.io/badge/React-19.2-61dafb?style=flat-square&logo=react&logoColor=white" alt="React" />
+                  <img src="https://img.shields.io/badge/Node.js-20.0-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node.js" />
+                  <img src="https://img.shields.io/badge/Express-5.0-000000?style=flat-square&logo=express&logoColor=white" alt="Express" />
+                  <img src="https://img.shields.io/badge/TailwindCSS-3.4-06b6d4?style=flat-square&logo=tailwindcss&logoColor=white" alt="TailwindCSS" />
+                  <img src="https://img.shields.io/badge/License-MIT-22c55e?style=flat-square" alt="MIT License" />
+                </div>
+              </div>
+
+              {/* OVERVIEW */}
+              <div className="space-y-2">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-indigo-500" /> Overview
+                </h2>
+                <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                  <strong>my-awesome-app</strong> is engineered to deliver a structured, scalable, and maintainable codebase. It decouples business logic from presentation layers, enforcing clean software design principles across modules.
+                </p>
+              </div>
+
+              {/* TECH STACK TABLE */}
+              <div className="space-y-3">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Layers className="w-5 h-5 text-indigo-500" /> Tech Stack Architecture
+                </h2>
+                <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-800">
+                      <tr>
+                        <th className="p-3">Technology</th>
+                        <th className="p-3">Category</th>
+                        <th className="p-3">Role in Repository</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200 dark:divide-slate-800 text-slate-600 dark:text-slate-400">
+                      <tr>
+                        <td className="p-3 font-bold text-indigo-500">TypeScript</td>
+                        <td className="p-3 font-mono">Language</td>
+                        <td className="p-3">Static typing, interface definitions, and IDE autocomplete.</td>
+                      </tr>
+                      <tr>
+                        <td className="p-3 font-bold text-indigo-500">React</td>
+                        <td className="p-3 font-mono">Frontend UI</td>
+                        <td className="p-3">Component-based reactive UI rendering and state hooks.</td>
+                      </tr>
+                      <tr>
+                        <td className="p-3 font-bold text-indigo-500">Express</td>
+                        <td className="p-3 font-mono">Backend API</td>
+                        <td className="p-3">RESTful API routing, middleware chains, and HTTP request handling.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: TERMINAL DIFF */}
+          {simTab === 'diff' && (
+            <div className="p-6 font-mono text-xs sm:text-sm text-slate-300 space-y-2 bg-slate-950">
+              <div className="text-indigo-400 font-bold border-b border-slate-800 pb-2">--- Terminal Diff Preview (Existing vs mdfmt Generated) ---</div>
+              <div className="text-red-400">- L1: # my-awesome-app</div>
+              <div className="text-red-400">- L2: A simple project.</div>
+              <div className="text-green-400">+ L1: &lt;p align="center"&gt;&lt;img src="https://img.icons8.com/fluency/96/markdown.png" width="80" /&gt;&lt;/p&gt;</div>
+              <div className="text-green-400">+ L2: &lt;h1 align="center"&gt;my-awesome-app&lt;/h1&gt;</div>
+              <div className="text-green-400">+ L3: &lt;p align="center"&gt;&lt;a href="#-overview"&gt;&lt;img src="https://img.shields.io/badge/📖_Overview-4f46e5?style=for-the-badge" /&gt;&lt;/a&gt;&lt;/p&gt;</div>
+              <div className="text-green-400">+ L4: ## ⚙️ Tech Stack Architecture Matrix Table</div>
+              <div className="text-slate-500 pt-2">... [200+ detailed lines generated cleanly]</div>
+            </div>
+          )}
         </section>
 
         {/* FEATURES GRID */}
@@ -194,7 +334,7 @@ export default function CliPage() {
             </div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white">VS Code Terminal Native</h3>
             <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Works seamlessly inside VS Code integrated terminal (`Ctrl + ~`) across Windows, macOS, and Linux.
+              Works seamlessly inside VS Code integrated terminal (`Ctrl + ~`) across Windows PowerShell, macOS, and Linux.
             </p>
           </div>
 
