@@ -5,22 +5,22 @@
 <h1 align="center">mdfmt</h1>
 
 <p align="center">
-  <strong>A modern, AI-powered Markdown editor for crafting stunning README files — visually.</strong>
+  <strong>Comprehensive Markdown Studio and Automated Documentation Engine</strong>
 </p>
 
 <p align="center">
-  <em>Write in rich text. Export pristine GitHub-Flavored Markdown. Let AI document your repos.</em>
+  <em>Visual WYSIWYG editor, AI documentation generation, local repository CLI analysis, and developer asset tooling.</em>
 </p>
 
 <br />
 
 <p align="center">
-  <a href="#-features"><img src="https://img.shields.io/badge/✨_Features-4f46e5?style=for-the-badge" alt="Features" /></a>&nbsp;
-  <a href="#-architecture"><img src="https://img.shields.io/badge/🏗️_Architecture-0891b2?style=for-the-badge" alt="Architecture" /></a>&nbsp;
-  <a href="#-tech-stack"><img src="https://img.shields.io/badge/⚙️_Tech_Stack-059669?style=for-the-badge" alt="Tech Stack" /></a>&nbsp;
-  <a href="#-getting-started"><img src="https://img.shields.io/badge/🚀_Get_Started-dc2626?style=for-the-badge" alt="Get Started" /></a>&nbsp;
-  <a href="#-project-structure"><img src="https://img.shields.io/badge/📂_Structure-ca8a04?style=for-the-badge" alt="Structure" /></a>&nbsp;
-  <a href="#-contributing"><img src="https://img.shields.io/badge/🤝_Contribute-7c3aed?style=for-the-badge" alt="Contribute" /></a>
+  <a href="#overview"><img src="https://img.shields.io/badge/Overview-4f46e5?style=flat-square" alt="Overview" /></a>&nbsp;
+  <a href="#cli-tool"><img src="https://img.shields.io/badge/CLI_Tool-0284c7?style=flat-square" alt="CLI Tool" /></a>&nbsp;
+  <a href="#core-features"><img src="https://img.shields.io/badge/Features-0891b2?style=flat-square" alt="Features" /></a>&nbsp;
+  <a href="#architecture"><img src="https://img.shields.io/badge/Architecture-059669?style=flat-square" alt="Architecture" /></a>&nbsp;
+  <a href="#getting-started"><img src="https://img.shields.io/badge/Getting_Started-dc2626?style=flat-square" alt="Getting Started" /></a>&nbsp;
+  <a href="#api-reference"><img src="https://img.shields.io/badge/API_Reference-7c3aed?style=flat-square" alt="API Reference" /></a>
 </p>
 
 <br />
@@ -32,947 +32,653 @@
   <img src="https://img.shields.io/badge/TailwindCSS-3.4-06b6d4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 3.4" />
   <img src="https://img.shields.io/badge/Express-5.2-000000?style=flat-square&logo=express&logoColor=white" alt="Express 5.2" />
   <img src="https://img.shields.io/badge/TipTap-3.20-1a1a2e?style=flat-square&logo=tiptap&logoColor=white" alt="TipTap 3.20" />
-  <img src="https://img.shields.io/badge/Firebase-Auth-ffca28?style=flat-square&logo=firebase&logoColor=black" alt="Firebase" />
   <img src="https://img.shields.io/badge/Groq-LLaMA_3.3_70B-f55036?style=flat-square&logo=meta&logoColor=white" alt="Groq LLM" />
   <img src="https://img.shields.io/badge/License-MIT-22c55e?style=flat-square" alt="MIT License" />
 </p>
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
-- [✨ Features](#-features)
-  - [Rich Text Editor (WYSIWYG)](#-rich-text-editor-wysiwyg)
-  - [Real-Time Markdown Conversion](#-real-time-markdown-conversion)
-  - [Live GitHub-Style Preview](#-live-github-style-preview)
-  - [AI Documentation Agent](#-ai-documentation-agent)
-  - [Badge Studio](#-badge-studio)
-  - [Diagram Studio](#-diagram-studio)
-  - [GitHub Profile Builder](#-github-profile-builder)
-  - [Templates Gallery](#-templates-gallery)
-  - [Table of Contents Generator](#-table-of-contents-generator)
-  - [Emoji Picker](#-emoji-picker)
-  - [GitHub Statistics Badges](#-github-statistics-badges)
-  - [Image Insertion](#-image-insertion)
-  - [Document Outline & Navigation](#-document-outline--navigation)
-  - [Import & Export](#-import--export)
-  - [Dark Mode](#-dark-mode)
-  - [Draft Persistence](#-draft-persistence)
-  - [Authentication](#-authentication)
-- [🏗️ Architecture](#-architecture)
-  - [System Overview](#system-overview)
-  - [Data Flow Pipeline](#data-flow-pipeline)
+- [CLI Tool](#cli-tool)
+  - [Quick Start](#quick-start)
+  - [Command Reference](#command-reference)
+  - [Options and Flags](#options-and-flags)
+  - [Local Analysis Engine](#local-analysis-engine)
+  - [Offline Fallback Mode](#offline-fallback-mode)
+- [Core Features](#core-features)
+  - [Visual WYSIWYG Editor](#visual-wysiwyg-editor)
+  - [Real-Time Markdown Engine](#real-time-markdown-engine)
+  - [Dual-Pane GitHub-Flavored Preview](#dual-pane-github-flavored-preview)
+  - [AI Repository Documentation Agent](#ai-repository-documentation-agent)
+  - [Badge Studio](#badge-studio)
+  - [Diagram Studio](#diagram-studio)
+  - [GitHub Profile Builder](#github-profile-builder)
+  - [Template Library](#template-library)
+  - [Document Outline and Navigation](#document-outline-and-navigation)
+  - [Table of Contents Generator](#table-of-contents-generator)
+  - [Import and Export Engine](#import-and-export-engine)
+  - [User Authentication](#user-authentication)
+- [Architecture](#architecture)
+  - [Monorepo Structure](#monorepo-structure)
+  - [Editor Data Flow](#editor-data-flow)
   - [AI Generation Pipeline](#ai-generation-pipeline)
-- [⚙️ Tech Stack](#-tech-stack)
-- [🚀 Getting Started](#-getting-started)
+  - [CLI Scanning Pipeline](#cli-scanning-pipeline)
+- [Technology Stack](#technology-stack)
+- [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
-  - [Frontend Setup](#frontend-setup)
-  - [Backend Setup](#backend-setup)
-  - [Environment Variables](#environment-variables)
-- [📂 Project Structure](#-project-structure)
-- [🔧 How It Works](#-how-it-works)
-  - [TipTap Editor Configuration](#tiptap-editor-configuration)
-  - [HTML-to-Markdown Conversion](#html-to-markdown-conversion)
-  - [Markdown-to-HTML Parser](#markdown-to-html-parser)
-  - [State Management](#state-management)
-  - [GitHub Repository Scraping](#github-repository-scraping)
-  - [AI Documentation Generation](#ai-documentation-generation)
-- [📡 API Reference](#-api-reference)
-- [🛣️ Roadmap](#-roadmap)
-- [🤝 Contributing](#-contributing)
-- [📄 License](#-license)
+  - [Frontend Installation](#frontend-installation)
+  - [Backend Installation](#backend-installation)
+  - [CLI Installation](#cli-installation)
+- [Configuration and Environment Variables](#configuration-and-environment-variables)
+- [API Reference](#api-reference)
+- [Project Directory Structure](#project-directory-structure)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
 ## Overview
 
-**mdfmt** (README Studio) is an open-source, browser-based Markdown editor purpose-built for crafting beautiful README files. It combines a rich-text WYSIWYG editor with real-time Markdown conversion, an AI-powered documentation agent, a badge studio, template gallery, and more — all in a polished, split-pane workspace.
+**mdfmt** is an open-source documentation suite engineered to streamline technical documentation workflows for individual developers and engineering teams. It unites visual rich-text composition with real-time GitHub-Flavored Markdown (GFM) synchronization, an automated repository analysis engine, an offline-capable CLI generator, interactive diagram synthesis, and badge generation utilities.
 
-Instead of memorizing Markdown syntax or toggling between a text editor and a preview, mdfmt gives you a **visual editing experience**: write naturally in a rich-text editor on the left, see the generated Markdown and a rendered GitHub-style preview on the right. Every keystroke produces clean, GitHub-Flavored Markdown in real time.
+Developers frequently encounter friction when documenting repositories: manual syntax formatting is tedious, while conventional AI generators typically inspect only top-level file names, resulting in superficial summaries. mdfmt resolves this through two complementary workflows:
 
-For existing projects, point the **AI Agent** at any public GitHub repository and it will analyze your codebase — cloning the repo, inspecting your tech stack, sampling source files, and generating comprehensive documentation powered by the **Llama 3.3-70B** model via Groq.
-
-```
-┌──────────────────────────────────────────────────────────────────────┐
-│  ⌘ mdfmt       Editor │ AI Agent │ Templates │ Badge Studio    [🌙] │
-├──────────────────────────────────────────────────────────────────────┤
-│  Outline │ Import MD │ Clear Draft              Copy Markdown │ Export│
-├──────────────────────────────────────────────────────────────────────┤
-│  H1 H2 H3 │ B I S ` │ • 1. ☐ │ ❝ — 🔗 📷 ▦ 🎯 😀 📊 ⚡ │ ↩ ↪  │
-├─────────────────────────────────┬────────────────────────────────────┤
-│                                 │  ┌─ Code ── Preview ─┐   42 words │
-│                                 │  │                    │            │
-│   WYSIWYG Rich-Text Editor      │  │   # My Project     │            │
-│   ━━━━━━━━━━━━━━━━━━━━━━━━      │  │                    │            │
-│                                 │  │   A modern web     │            │
-│   Write naturally here.         │  │   application...   │            │
-│   Format with the toolbar       │  │                    │            │
-│   or keyboard shortcuts.        │  │   ## Features      │            │
-│                                 │  │   - Feature one    │            │
-│                                 │  │   - Feature two    │            │
-│                                 │  └────────────────────┘            │
-└─────────────────────────────────┴────────────────────────────────────┘
-```
+1. **Web Studio**: A visual workspace combining TipTap rich-text editing, live syntax-highlighted preview, structure outline navigation, badge synthesis, and AI agent integration.
+2. **CLI Engine**: A zero-configuration command-line utility that inspects local repository trees, parses source file contents for architecture patterns, routes, dependencies, and environment references, and outputs complete, production-grade documentation in fractions of a second.
 
 ---
 
-## ✨ Features
+## CLI Tool
 
-### 🖊️ Rich Text Editor (WYSIWYG)
+The `mdfmt` command-line interface enables developers to generate comprehensive README documentation directly from their terminal or IDE workspace without requiring browser interaction.
 
-Write naturally in a rich-text editor powered by [TipTap](https://tiptap.dev/) and [ProseMirror](https://prosemirror.net/). No Markdown syntax to memorize — just click a toolbar button or use a keyboard shortcut.
+```
++-------------------------------------------------------------------------+
+| $ npx mdfmt generate --offline                                          |
+|                                                                         |
+|  mdfmt — Interactive Documentation Wizard                               |
+|                                                                         |
+|  [x] Analyzed workspace (TypeScript, React, Express, Prisma)            |
+|  [x] Scanned 81 files across 4 module directories                       |
+|  [x] Extracted 15 environment variables and 9 UI components             |
+|  [x] Generated README.md via local template engine (0.12s)              |
++-------------------------------------------------------------------------+
+```
 
-| Category | Supported Elements |
+### Quick Start
+
+Execute directly via `npx` in any project root directory without prior installation:
+
+```bash
+npx mdfmt
+```
+
+Alternatively, install the package globally via npm:
+
+```bash
+npm install -g mdfmt
+mdfmt generate
+```
+
+### Command Reference
+
+| Command | Description |
 |---|---|
-| **Headings** | H1, H2, H3 with GitHub-style bottom borders |
-| **Inline Formatting** | **Bold**, *Italic*, ~~Strikethrough~~, `Inline Code` |
-| **Lists** | Bullet lists, Ordered lists, Task lists with checkboxes |
-| **Block Elements** | Blockquotes, Horizontal rules, Fenced code blocks |
-| **Alert Blocks** | Note 📝, Tip 💡, Important ❗, Warning ⚠️ (GitHub-flavored syntax) |
-| **Links** | Hyperlinks with URL prompt dialog |
-| **Images** | Insert from URLs with alt text and live preview |
-| **Tables** | 3×3 insertable tables with header rows, row/column management, and alignment controls |
-| **Snippets** | Quick-insert pre-built content blocks |
+| `npx mdfmt` | Launches the interactive setup wizard, scans the current directory, and prompts for depth and tone options |
+| `mdfmt generate` | Scans the local workspace and generates a standardized `README.md` |
+| `mdfmt generate --offline` | Executes the local deterministic analysis engine, bypassing external server requests |
+| `mdfmt generate --yes` | Runs non-interactively using detected defaults, suitable for CI/CD pipelines and scripts |
+| `mdfmt generate -o DOCS.md` | Writes generated markdown to a custom destination file |
+| `mdfmt generate -i "<text>"` | Supplies custom instructions and developer emphasis to the generation engine |
+| `mdfmt generate -k <key>` | Supplies a Groq API key directly for LLM-powered synthesis |
+| `mdfmt init` | Initializes project configuration and launches the generation wizard |
 
-**Power user features:**
+### Options and Flags
 
-- ⌨️ **Keyboard shortcuts** — `Ctrl+B` bold, `Ctrl+I` italic, `Ctrl+Shift+X` strikethrough, and more
-- 📋 **Smart paste** — paste HTML, Markdown, or plain text and it auto-converts
-- ↩️ **Undo/Redo** — full history with toolbar buttons
-- 🎯 **Block selection** — easily select and manipulate entire paragraphs or tables
-- 🖱️ **Drag & Drop** — drop `.md` or `.txt` files directly into the editor
+```text
+Usage: mdfmt [command] [options]
 
----
+Commands:
+  generate [options]           Scan workspace and generate README.md (default command)
+  init                         Initialize mdfmt documentation wizard
 
-### ⚡ Real-Time Markdown Conversion
-
-As you type, the output panel updates **instantly**. The conversion engine uses [Turndown](https://github.com/mixmark-io/turndown) configured for GitHub-Flavored Markdown:
-
-```
- User types in           Turndown converts            Output panel
- WYSIWYG Editor    ──►    HTML → Markdown      ──►    shows clean GFM
-```
-
-- **ATX-style headings** — `# Heading` (not underline style)
-- **Fenced code blocks** — triple backticks with language tags
-- **Dash bullet markers** — `- item` (consistent style)
-- **Strikethrough** — `~~text~~` via custom Turndown rule
-- **Task lists** — `- [x] Done` / `- [ ] Todo`
-- **Alert blocks** — `> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]`
-- **Table rendering** — pipe-delimited format with proper alignment
-- **Image syntax** — `![alt](url)` via custom Turndown rule
-
----
-
-### 👁️ Live GitHub-Style Preview
-
-Toggle between **Code** view (raw Markdown) and **Preview** view (rendered output) in the output pane. The preview uses `react-markdown` with `remark-gfm` and `react-syntax-highlighter` with the **One Dark** theme for syntax-highlighted code blocks — matching how your README will actually look on GitHub.
-
-**Live document metrics** are displayed in the output header:
-- 📝 Word count
-- 📊 Character count
-- ⏱️ Estimated reading time
-
----
-
-### 🤖 AI Documentation Agent
-
-Point the AI agent at any public GitHub repository and it generates comprehensive documentation automatically.
-
-#### How It Works
-
-```
- 1. User provides         2. Backend clones        3. AI analyzes &        4. User reviews
-    GitHub repo URL   ──►    repo (depth=1)    ──►    generates docs   ──►   & revises
+Options:
+  -V, --version                Output the version number
+  -o, --output <filename>      Destination file path (default: "README.md")
+  -y, --yes                    Skip interactive confirmation prompts and accept defaults
+  -i, --instructions <text>    Custom focus instructions for the documentation engine
+  -s, --server <url>           Custom mdfmt backend API URL (default: "http://localhost:5000")
+  -k, --groq-key <key>         Groq API key for direct remote LLM generation
+  -l, --offline                Execute standalone offline generator (bypasses server communication)
+  -h, --help                   Display command-line help
 ```
 
-#### Generation Pipeline
+### Local Analysis Engine
 
-| Stage | What Happens |
-|---|---|
-| **Repository Scraping** | Shallow clone via `git clone --depth 1`, then walks the file tree (skipping `node_modules`, `.git`, `dist`, etc.) |
-| **File Sampling** | Ranks files by importance (package.json, README, routes, schemas, components), reads up to 220 files / 260KB total |
-| **Tech Stack Detection** | Identifies frameworks from `package.json`, `Cargo.toml`, `go.mod`, `pyproject.toml`, Dockerfile, and more |
-| **Analysis** | Extracts dependencies, scripts, API routes, entry points, env vars, and project structure |
-| **Documentation Generation** | Uses the **Llama 3.3-70B** model via Groq for AI-powered writing, or falls back to a local template engine |
+The CLI features a content-aware static analysis scanner (`cli/src/scanner/localScanner.ts` and `cli/src/api/client.ts`) that performs deep heuristic inspection across up to 80 prioritized source files:
 
-#### Three Documentation Depths
+- **API Route Extraction**: Identifies Express, Fastify, and standard REST route declarations (`app.get`, `router.post`, `router.delete`, etc.) along with their corresponding endpoint paths and handler files.
+- **Component Discovery**: Scans React and Vue source files (`.tsx`, `.jsx`, `.vue`) to extract declared component signatures and UI entry points.
+- **Exported Module Signatures**: Detects public functions, utility classes, and typed interfaces across library packages.
+- **Environment Variable Detection**: Extracts `process.env.*` and `import.meta.env.*` references across all source files, cross-referencing `.env.example` templates to construct configuration tables without exposing sensitive secrets.
+- **Database Schema Recognition**: Inspects Prisma schema models (`schema.prisma`), Mongoose definitions, TypeORM entities, and raw SQL migration files.
+- **Metrics and Language Distribution**: Calculates precise lines of code (LOC) per file extension and identifies dominant language distribution.
+- **CI/CD and Tooling Configuration**: Categorizes build configurations including `tsconfig.json`, `vite.config.ts`, `eslint.config.js`, `tailwind.config.js`, Dockerfile, and GitHub Actions workflows (`.github/workflows/`).
+- **Secret Redaction**: Employs pattern-based sanitization rules (`API_KEY`, `AUTH_TOKEN`, `sk_live_*`, `ghp_*`, `AKIA*`) to ensure credentials and tokens are redacted prior to processing.
 
-| Depth | Output |
-|---|---|
-| `readme-only` | Quick, focused README with essential sections |
-| `standard` | README + Architecture documentation |
-| `complete` | README + Architecture + Development Guide + API Reference |
+### Offline Fallback Mode
 
-#### Review & Revision Workflow
+When executing with `--offline` or when network connectivity to the backend service is unavailable, mdfmt switches to its deterministic local template engine. This mode compiles the structural snapshot into a structured GitHub-Flavored Markdown file in under 200ms with zero network overhead.
 
-The generated documentation enters a review cycle:
+---
+
+## Core Features
+
+### Visual WYSIWYG Editor
+
+The web studio integrates a rich-text editing surface powered by TipTap and ProseMirror, removing the requirement to memorize complex markdown markup.
+
+- **Header Hierarchy**: Support for H1 through H6 with GitHub-standard bottom rule demarcations.
+- **Inline Typography**: Bold, italic, strikethrough, inline code, and text highlight formatting.
+- **Structured Block Formats**: Ordered lists, unordered bullet lists, interactive task checklists, and blockquotes.
+- **GitHub Alert Callouts**: Native syntax generation for `> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]`, and `> [!CAUTION]` containers.
+- **Table Management**: Insertion and visual editing of tabular grids with row/column manipulation and column alignment.
+- **Keyboard Shortcuts**: Standard keybindings (`Ctrl+B`, `Ctrl+I`, `Ctrl+Shift+X`, `Ctrl+Z`, `Ctrl+Y`) for seamless desktop editing.
+- **Drag-and-Drop Ingestion**: Direct drag-and-drop support for `.md` and `.txt` files with automated AST transformation.
+
+### Real-Time Markdown Engine
+
+Every modification within the WYSIWYG canvas triggers instant transformation via Turndown into standardized GitHub-Flavored Markdown:
 
 ```
-queued → scraping → generating → needs_review → approved
-                                       ↕
-                                    revising
+[ User Input in WYSIWYG Canvas ]
+               │
+               ▼
+[ ProseMirror Document Node Model ]
+               │
+               ▼
+[ HTML Serialization (TipTap) ]
+               │
+               ▼
+[ Custom Turndown Pipeline (GFM Rules) ]
+               │
+               ▼
+[ Pristine Markdown Output & Draft Store ]
 ```
 
-- 📝 Provide feedback and the AI revises based on your suggestions
-- ✅ Selectively approve individual files before committing
-- 🔄 Iterate until your documentation is perfect
-- 📊 Real-time job status tracking with async polling
+### Dual-Pane GitHub-Flavored Preview
 
-> **Note:** AI generation requires a [Groq API key](https://console.groq.com/). Without one, the system falls back to intelligent template-based generation using heuristics from your repository structure.
+The output pane provides instantaneous side-by-side verification:
 
----
+- **Raw Code View**: Formatted markdown syntax with word count, character count, and estimated reading time statistics.
+- **Rendered Preview**: Visual presentation rendered via `react-markdown` and `remark-gfm`, paired with `react-syntax-highlighter` utilizing the One Dark syntax theme to mirror GitHub's desktop environment.
 
-### 🎨 Badge Studio
+### AI Repository Documentation Agent
 
-A comprehensive badge creation and management system across a dedicated page:
+For existing repositories, mdfmt provides an automated documentation generation pipeline backed by the **Llama 3.3-70B** large language model via Groq:
 
-#### Pre-Built Badge Library (80+ badges)
+- **Repository Ingestion**: Performs shallow repository cloning (`git clone --depth 1`) in sandboxed temporary storage.
+- **Static Ranking Algorithm**: Prioritizes key structural files (`package.json`, `go.mod`, `Cargo.toml`, database schemas, routing controllers, configuration files) up to a 260KB token-optimized context window.
+- **Configurable Generation Depth**:
+  - `readme-only`: Concise, high-impact documentation focused on setup, features, and core workflows.
+  - `standard`: Comprehensive README paired with system architecture breakdowns.
+  - `complete`: Full documentation suite including architecture blueprints, development workflows, and API route references.
+- **Review and Revision Lifecycle**: Interactive feedback loop allowing developers to submit prompt revisions before exporting the finalized draft.
 
-| Category | Examples |
-|---|---|
-| **Languages** | Python, JavaScript, TypeScript, Go, Rust, Java, C++, C#, PHP, Ruby, Swift, Kotlin |
-| **Frameworks** | React, Vue, Angular, Next.js, Svelte, Django, FastAPI, Spring, Flask, Express, NestJS |
-| **Tools & Platforms** | Docker, Kubernetes, Git, GitHub, GitLab, VS Code, AWS, Firebase, MongoDB, PostgreSQL, Redis |
+### Badge Studio
 
-#### Tech Stack Grid
+A centralized badge construction and catalogue utility integrating with [Shields.io](https://shields.io):
 
-Quick-insert buttons organized by category — Languages (7), Frameworks (7), Tools (7) — for rapidly building a standardized tech stack display.
+- **Pre-Built Technology Library**: Over 80 verified badges across programming languages, backend frameworks, UI libraries, databases, and cloud providers.
+- **Custom Badge Designer**: Granular configuration of labels, messages, hex color codes, and visual badge styles (`for-the-badge`, `flat`, `flat-square`, `plastic`).
+- **Social Platform Linking**: One-click badge generators for GitHub, LinkedIn, Twitter/X, Discord, YouTube, Telegram, and developer portfolios.
+- **Tech Stack Matrix**: Fast-selection grid for rapidly appending categorized technology matrices to project documentation.
 
-#### Custom Badge Builder
+### Diagram Studio
 
-Create unlimited custom badges with [shields.io](https://shields.io/) integration:
+A text-to-diagram generation studio combining natural language prompts with Mermaid.js rendering:
 
-- 🏷️ **Label & Message** — full text customization
-- 🎨 **Colors** — 16+ preset colors or custom hex values
-- 🖌️ **Styles** — `for-the-badge`, `flat`, `flat-square`, `plastic`
-- 👁️ **Live preview** before inserting
-- 📋 **Copy-to-markdown** — instant `![badge](url)` generation
+- **Natural Language Translation**: Converts natural architectural descriptions into valid Mermaid flowchart, sequence, or class diagram syntax using LLM integration.
+- **Interactive Visualizer**: Renders SVG diagrams with support for light and dark color schemes.
+- **Code Editor**: Raw Mermaid code editing with live visual feedback and one-click insertion into the active document draft.
 
-#### Social Media Links (16+ platforms)
+### GitHub Profile Builder
 
-GitHub · Twitter/X · LinkedIn · YouTube · Discord · Reddit · Twitch · Instagram · Stack Overflow · Dev.to · Medium · Hashnode · Mastodon · Telegram · Email · Website
+A dedicated wizard for constructing GitHub personal profile READMEs (`username/username`):
 
-Automatically generates properly formatted badge links with batch insert support.
+- **Identity and Headline Modules**: Form inputs for developer titles, biographies, and contact links.
+- **Dynamic Metric Cards**: Integration with `github-readme-stats` and language distribution analytics with theme customization (Radical, Tokyo Night, Dracula, etc.).
+- **Aligned Badge Arrays**: Automated alignment of social links, tech stacks, and contribution trackers.
 
----
+### Template Library
 
-### 🔀 Diagram Studio
+A curated repository of structured templates targeting diverse software domains:
 
-Translate your software architecture ideas into visual diagrams using AI and Mermaid.js!
+- **Minimalist Application**: Concise structure for utilities, scripts, and micro-libraries.
+- **Comprehensive Monorepo**: Enterprise-ready structure supporting multi-package architectures.
+- **REST API Server**: Dedicated endpoint tables, environment specifications, and authentication guides.
+- **Developer Portfolio**: Showcase layout emphasizing project highlights, live links, and tech stacks.
 
-- 🧠 **AI Generation** — Type out your database schema, user flow, or system architecture in plain English, and the LLaMA 3.3-70B model builds the Mermaid syntax.
-- 👁️ **Live Visualizer** — See your diagram render perfectly within the UI, respecting both light and dark mode themes.
-- 💻 **Source Code Access** — Inspect, tweak, and perfect the raw Mermaid code before inserting it.
-- ⚡ **One-Click Insert** — Push the diagram code block straight into your editor draft.
+### Document Outline and Navigation
 
----
+A collapsible navigation sidebar that scans document headings in real time:
 
-### 🧑‍💻 GitHub Profile Builder
+- Hierarchical indentation matching H1 through H6 levels.
+- Smooth-scroll navigation with visual element highlighting upon selection.
+- Continuous synchronization as document sections are added, modified, or removed.
 
-Create an impressive `user/user` special GitHub profile README using our step-by-step wizard.
+### Table of Contents Generator
 
-- 📝 **Personal Info** — Add your headline, bio, and personal details.
-- 🔗 **Social Links** — Instantly link your Twitter, LinkedIn, GitHub, and Portfolio.
-- 🛠️ **Tech Stack Grid** — Click to select from popular technologies and auto-generate beautifully aligned badges.
-- 📊 **Dynamic GitHub Stats** — Integrate `github-readme-stats` cards, top languages, and apply beautiful custom themes (Radical, Tokyo Night, Dracula, etc.) instantly.
-- 👁️ **Live Preview** — See the compiled markdown output in real time.
+Automated generation of linked Table of Contents sections:
 
----
+- Traverses document heading nodes to produce slugified, GitHub-compatible anchor links.
+- Generates indented markdown list structures capable of dynamic regeneration upon document edits.
 
-### 📚 Templates Gallery
+### Import and Export Engine
 
-Pre-built README templates to jumpstart your documentation:
+- **Markdown Import**: Upload `.md` or `.txt` files directly into the editor through file selection or drag-and-drop.
+- **Direct File Export**: Client-side blob generation allowing one-click download of `README.md` or raw HTML files.
+- **Clipboard Utility**: One-click clipboard copy with visual confirmation feedback.
 
-| Template | Use Case |
-|---|---|
-| **Minimalist Project** | Clean, lightweight template for small projects |
-| **Comprehensive Library** | Full-featured template for open-source libraries |
-| **API Reference Server** | Specialized template for API documentation |
-| **Portfolio Project** | Template designed for personal portfolio showcases |
+### User Authentication
 
-Each template includes pre-structured sections (Overview, Installation, Usage, Contributing, License), properly formatted headings and code blocks, and is fully editable in the WYSIWYG editor.
+Built-in user management with Firebase Authentication:
 
----
-
-### 🎯 Table of Contents Generator
-
-Automatically generate a clickable table of contents from your document:
-
-- 🔍 **Auto-scans** all H1, H2, and H3 headings from the editor content
-- 🔗 **Generates GitHub-compatible anchor links** (slugified, lowercase, hyphenated)
-- 🔄 **Dynamic updates** — regenerate as you add or modify headings
-- 📍 **Customizable placement** — insert anywhere in your document
+- Email and password registration with client-side password strength validation.
+- Google OAuth and GitHub OAuth single sign-on providers.
+- Persistent session state managed through Zustand and Firebase authentication listeners.
 
 ---
 
-### 😀 Emoji Picker
+## Architecture
 
-Browse and insert emojis organized by 7 categories:
-
-| Category | Examples |
-|---|---|
-| Smileys & People | 😀 😂 🤔 👍 |
-| Animals & Nature | 🐱 🌿 🌸 🦋 |
-| Food & Drink | 🍕 ☕ 🍰 🍎 |
-| Travel & Places | ✈️ 🏔️ 🌍 🏠 |
-| Activities & Sports | ⚽ 🎮 🎨 🏆 |
-| Objects | 💻 📱 🔧 📦 |
-| Symbols | ❤️ ⭐ ✅ ⚡ |
-
----
-
-### 📊 GitHub Statistics Badges
-
-Insert dynamic badges that display live information from any GitHub repository:
-
-- ⭐ **Stars** — repository star count
-- 🍴 **Forks** — number of forks
-- 👀 **Watchers** — active watchers
-- 🐛 **Issues** — open issue count
-- 📜 **License** — detected license type
-- 📅 **Last Commit** — most recent commit date
-
-These badges auto-update as your repository grows, always showing fresh metrics.
-
----
-
-### 🖼️ Image Insertion
-
-Seamlessly add images to your README from URLs:
-
-- 👁️ **Live preview** — see images before inserting
-- 📝 **Alt text support** — accessibility and SEO
-- ✅ **URL validation** — ensures images load properly
-- 📄 **Markdown-compatible** — generates `![alt](url)` syntax
-
----
-
-### 📑 Document Outline & Navigation
-
-A collapsible outline panel on the left side of the editor:
-
-- 🗂️ Automatically detects all headings (H1–H6) from the editor
-- 🏷️ Shows heading level indicators (H1, H2, H3)
-- 🖱️ Click any heading to **smooth-scroll** to it with a highlight animation
-- 📐 Indented hierarchy matching your document structure
-- 🔄 Real-time updates as you type
-
----
-
-### 📥 Import & Export
-
-| Action | Details |
-|---|---|
-| **Import .md** | Upload existing Markdown files via file picker — auto-parsed into the WYSIWYG editor |
-| **Drag & Drop** | Drop `.md` or `.txt` files directly into the editor area |
-| **Export .md** | Download as `README.md` — client-side via the Blob API, no server needed |
-| **Export .html** | Download the raw HTML representation |
-| **Copy Markdown** | One-click copy to clipboard with a 2-second "Copied!" confirmation |
-
----
-
-### 🌙 Dark Mode
-
-Toggle between light and dark themes with a single click:
-
-- 🌓 Full application coverage — editor, toolbar, output pane, modals, all pages
-- 💾 Persistent state — remembered across sessions via Zustand
-- ✨ Smooth CSS transitions when switching
-- 🎨 Tailwind CSS `class` strategy for efficient dark mode styling
-
----
-
-### 💾 Draft Persistence
-
-Your work is automatically saved to `localStorage`:
-
-- Every keystroke persists both the Markdown and HTML to local storage
-- Drafts survive browser refreshes, tab closes, and crashes
-- "Clear Draft" button with confirmation dialog to start fresh
-- Templates and AI-generated content automatically populate the draft store
-
----
-
-### 🔐 Authentication
-
-Complete user authentication system (pages built, Firebase integration ready):
-
-- 📧 **Email & Password** — traditional account creation with password strength indicator (Too Short → Fair → Good → Strong)
-- 🔵 **Google OAuth** — one-click sign-in
-- 🐙 **GitHub OAuth** — authenticate with your GitHub account
-- 🔥 **Firebase Integration** — secure, reliable auth backend
-- 💾 **Persistent Sessions** — stay logged in across browser sessions via `onAuthStateChanged`
-
----
-
-## 🏗️ Architecture
-
-### System Overview
-
-mdfmt is a **monorepo** with two independent services:
+### Monorepo Structure
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         mdfmt Monorepo                              │
-├──────────────────────────────┬──────────────────────────────────────┤
-│         frontend/            │           backend/                   │
-│      React 19 + Vite 7       │        Express 5 + Node.js          │
-│                              │                                      │
-│  ┌────────────────────────┐  │  ┌────────────────────────────────┐  │
-│  │    Pages               │  │  │    REST API                    │  │
-│  │    ├── EditorPage      │  │  │    └── /api/build-ai           │  │
-│  │    ├── AiGeneratorPage │  │  │        ├── POST /jobs          │  │
-│  │    ├── BadgeStudioPage │  │  │        ├── POST /generate      │  │
-│  │    ├── DiagramStudioPage│  │  │        ├── GET  /jobs/:id      │  │
-│  │    ├── ProfileBuilderPage│ │  │        ├── POST /jobs/:id/revise│ │
-│  │    ├── TemplatesPage   │  │  │        ├── POST /jobs/:id/approve││
-│  │    ├── SignInPage      │  │  │        └── POST /diagram       │  │
-│  │    └── SignUpPage      │  │  │                                │  │
-│  └────────────────────────┘  │  └────────────────────────────────┘  │
-│                              │                                      │
-│  ┌────────────────────────┐  │  ┌────────────────────────────────┐  │
-│  │    Components (14)     │  │  │    Services                    │  │
-│  │    ├── Toolbar         │  │  │    ├── githubService    (clone) │  │
-│  │    ├── TableToolbar    │  │  │    ├── aiService    (generate)  │  │
-│  │    ├── Navbar          │  │  │    ├── llmService      (Groq)  │  │
-│  │    ├── AlertBlockDD    │  │  │    └── jobStore      (in-mem)  │  │
-│  │    ├── AutoTocButton   │  │  └────────────────────────────────┘  │
-│  │    ├── BadgePickerModal│  │                                      │
-│  │    ├── CustomBadgeModal│  │  ┌────────────────────────────────┐  │
-│  │    ├── EmojiPickerModal│  │  │    Utils                       │  │
-│  │    ├── GitHubStatsModal│  │  │    ├── asyncHandler            │  │
-│  │    ├── InsertImageModal│  │  │    └── httpErrors              │  │
-│  │    ├── SnippetDropdown │  │  └────────────────────────────────┘  │
-│  │    ├── SocialLinksModal│  │                                      │
-│  │    ├── TechStackGrid   │  │                                      │
-│  │    └── TemplatesSidebar│  │                                      │
-│  └────────────────────────┘  │                                      │
-│                              │                                      │
-│  ┌────────────────────────┐  │                                      │
-│  │    State (Zustand)     │  │                                      │
-│  │    ├── useThemeStore   │  │                                      │
-│  │    ├── useDraftStore   │  │                                      │
-│  │    └── useAuthStore    │  │                                      │
-│  └────────────────────────┘  │                                      │
-│                              │                                      │
-│  ┌────────────────────────┐  │                                      │
-│  │    Libs                │  │                                      │
-│  │    ├── firebase.ts     │  │                                      │
-│  │    └── markdownParser  │  │                                      │
-│  └────────────────────────┘  │                                      │
-├──────────────────────────────┴──────────────────────────────────────┤
-│                         Shared: TypeScript 5.9                      │
-└─────────────────────────────────────────────────────────────────────┘
++-------------------------------------------------------------------------------+
+|                               mdfmt Workspace                                 |
++-----------------------+-------------------------------+-----------------------+
+|       frontend/       |           backend/            |         cli/          |
+|   React 19 + Vite 7   |      Express 5 + Node.js      |   Node.js CLI Tool    |
+|   Tailwind + TipTap   |      Prisma + Groq SDK        |  Commander + Scanner  |
+|                       |                               |                       |
+|  * EditorPage         |  * REST Endpoints             |  * localScanner       |
+|  * CliPage            |    - /api/build-ai/jobs       |  * client (Analysis)  |
+|  * AiGeneratorPage    |    - /api/build-ai/diagram    |  * generateCommand    |
+|  * BadgeStudioPage    |  * Repository Analysis Engine |  * diff Utility       |
+|  * DiagramStudioPage  |  * Groq LLM Client            |                       |
+|  * ProfileBuilderPage |  * In-Memory / DB Job Queue   |                       |
++-----------------------+-------------------------------+-----------------------+
 ```
 
-### Data Flow Pipeline
-
-The core editor follows a unidirectional data flow:
+### Editor Data Flow
 
 ```
-┌──────────────────┐     HTML      ┌──────────────────┐    Markdown    ┌──────────────────┐
-│                  │ ──────────► │                  │ ──────────── ► │                  │
-│   TipTap Editor  │  onUpdate   │     Turndown     │   setState     │   Output Panel   │
-│   (ProseMirror)  │             │  (HTML → GFM)    │                │  (Code/Preview)  │
-│                  │             │                  │                │                  │
-└──────────────────┘             └──────────────────┘                └──────────────────┘
-         │                                                                    │
-         │                    ┌──────────────────┐                            │
-         └──────────────── ► │   Zustand Store   │ ◄ ────────────────────────┘
-           persist HTML       │  (useDraftStore)  │   persist Markdown
-                              │   + localStorage  │
-                              └──────────────────┘
+┌────────────────────────┐      HTML       ┌────────────────────────┐
+│                        │ ──────────────> │                        │
+│     TipTap Editor      │    onUpdate     │    Turndown Engine     │
+│   (ProseMirror Core)   │                 │   (GFM Rule Pipeline)  │
+│                        │                 │                        │
+└────────────────────────┘                 └────────────────────────┘
+            │                                           │
+            │                                           │ Markdown
+            ▼                                           ▼
+┌────────────────────────┐                 ┌────────────────────────┐
+│   HTML Persistence     │                 │   Markdown Preview /   │
+│   (useDraftStore)      │                 │   Raw Code Output Pane │
+└────────────────────────┘                 └────────────────────────┘
 ```
-
-1. User types in the **TipTap WYSIWYG editor**, which internally maintains a ProseMirror document
-2. On every keystroke (`onUpdate`), TipTap emits the current document as **HTML**
-3. HTML is piped through **Turndown** (configured for GFM) to produce clean **Markdown**
-4. Both HTML and Markdown are persisted to the **Zustand draft store** (backed by `localStorage`)
-5. The output panel renders either the raw Markdown or a GitHub-style preview
 
 ### AI Generation Pipeline
 
 ```
-┌────────────┐     POST       ┌────────────────┐    git clone    ┌────────────────┐
-│            │  /api/build-ai │                │   --depth 1     │                │
-│  Frontend  │ ────────────► │  Express API   │ ──────────── ► │    GitHub       │
-│  AI Agent  │               │  (Job Queue)   │                │   Repository   │
-│   Page     │ ◄──────────── │                │ ◄──────────────│                │
-│            │   Job Status   │                │   File Tree     │                │
-└────────────┘   Polling      └───────┬────────┘   + Contents    └────────────────┘
-                                      │
-                              ┌───────▼────────┐
-                              │  AI Service    │
-                              │                │
-                              │  ┌───────────┐ │
-                              │  │ Groq LLM  │ │  ◄── Llama 3.3-70B
-                              │  │ (primary) │ │
-                              │  └───────────┘ │
-                              │       OR       │
-                              │  ┌───────────┐ │
-                              │  │ Template  │ │  ◄── Heuristic fallback
-                              │  │ Engine    │ │
-                              │  └───────────┘ │
-                              └────────────────┘
+┌──────────────────┐    POST /jobs     ┌──────────────────┐   git clone   ┌──────────────────┐
+│  Frontend Client │ ────────────────> │   Express API    │ ────────────> │ GitHub API /     │
+│  or CLI Ingestion│                   │   (Job Engine)   │   --depth 1   │ Target Repo Host │
+└──────────────────┘                   └──────────────────┘               └──────────────────┘
+         │                                       │                                  │
+         │ Polling / Status                      ▼                                  ▼
+         │                             ┌──────────────────┐               ┌──────────────────┐
+         └───────────────────────────  │ Token Optimization│ <───────────── │ File Tree and    │
+                                       │ Context Builder  │   Source Read │ Source Sampling  │
+                                       └──────────────────┘               └──────────────────┘
+                                                 │
+                                                 ▼
+                                       ┌──────────────────┐
+                                       │ Groq LLM Service │
+                                       │ (Llama 3.3-70B)  │
+                                       └──────────────────┘
+```
+
+### CLI Scanning Pipeline
+
+```
+┌──────────────────┐
+│ Target Workspace │
+└──────────────────┘
+         │
+         ▼
+┌─────────────────────────────────────────────────────────────┐
+│ localScanner: Walk directory with .gitignore filter rules   │
+└─────────────────────────────────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────────────────────────────────┐
+│ Static Inspector: Sample up to 80 high-priority files       │
+│ - Parse Express/Fastify route declarations                  │
+│ - Extract React/Vue component definitions                   │
+│ - Identify Prisma/Mongoose database schemas                 │
+│ - Inspect environment variable references (process.env.*)   │
+│ - Calculate lines of code (LOC) metrics per language        │
+│ - Detect build and CI configuration files                   │
+│ - Redact sensitive credentials and API tokens               │
+└─────────────────────────────────────────────────────────────┘
+         │
+         ├─── [ Online Mode ] ──────> Send snapshot to mdfmt API Service
+         │
+         └─── [ Offline Mode ] ─────> Local deterministic README compilation (0.1s)
 ```
 
 ---
 
-## ⚙️ Tech Stack
+## Technology Stack
 
-### Frontend
+### Frontend Application
 
-| Technology | Version | Purpose |
-|:---|:---:|:---|
-| <img src="https://img.shields.io/badge/-React-61dafb?logo=react&logoColor=111&style=flat-square" alt="React" /> | `19.2` | UI component library with modern hooks and concurrent rendering |
-| <img src="https://img.shields.io/badge/-TypeScript-3178c6?logo=typescript&logoColor=white&style=flat-square" alt="TypeScript" /> | `5.9` | Static type checking for code safety and IDE intelligence |
-| <img src="https://img.shields.io/badge/-Vite-646cff?logo=vite&logoColor=white&style=flat-square" alt="Vite" /> | `7.3` | Lightning-fast build tool with sub-100ms HMR |
-| <img src="https://img.shields.io/badge/-Tailwind_CSS-06b6d4?logo=tailwindcss&logoColor=white&style=flat-square" alt="Tailwind" /> | `3.4` | Utility-first CSS with class-based dark mode strategy |
-| <img src="https://img.shields.io/badge/-TipTap-1a1a2e?logo=tiptap&logoColor=white&style=flat-square" alt="TipTap" /> | `3.20` | Headless rich-text editor built on ProseMirror |
-| <img src="https://img.shields.io/badge/-Turndown-333?style=flat-square" alt="Turndown" /> | `7.2` | HTML → Markdown conversion with GFM support |
-| <img src="https://img.shields.io/badge/-Zustand-443d3d?style=flat-square" alt="Zustand" /> | `5.0` | Lightweight state management (~2KB) |
-| <img src="https://img.shields.io/badge/-React_Router-ca4245?logo=reactrouter&logoColor=white&style=flat-square" alt="React Router" /> | `7.13` | Client-side routing and navigation |
-| <img src="https://img.shields.io/badge/-Firebase-ffca28?logo=firebase&logoColor=black&style=flat-square" alt="Firebase" /> | `12.9` | Authentication (Email, Google OAuth, GitHub OAuth) |
-| <img src="https://img.shields.io/badge/-Lucide-f56565?style=flat-square" alt="Lucide" /> | `0.575` | Icon library with 500+ tree-shakable SVG icons |
-| <img src="https://img.shields.io/badge/-React_Markdown-333?style=flat-square" alt="react-markdown" /> | `10.1` | Markdown rendering for the preview pane |
-| <img src="https://img.shields.io/badge/-Prism-1d1d1d?style=flat-square" alt="Prism" /> | `16.1` | Syntax highlighting with One Dark theme |
+| Component | Technology | Version | Purpose |
+|---|---|---|---|
+| Framework | React | 19.2 | Component architecture, state hooks, and concurrent rendering |
+| Language | TypeScript | 5.9 | Static type enforcement and interface declarations |
+| Build Tool | Vite | 7.3 | Local development server with sub-100ms HMR and Rollup bundling |
+| Styling | Tailwind CSS | 3.4 | Utility-first responsive design tokens and dark mode support |
+| WYSIWYG Engine | TipTap / ProseMirror | 3.20 | Headless, schema-driven rich text editing engine |
+| Markdown Converter | Turndown | 7.2 | HTML-to-GFM serialization with custom extensions |
+| State Management | Zustand | 5.0 | Lightweight centralized store with localStorage persistence |
+| Routing | React Router | 7.13 | Client-side page routing |
+| Markdown Parser | react-markdown | 10.1 | Markdown-to-JSX preview renderer with GFM plugin support |
+| Syntax Highlighting | Prism / SyntaxHighlighter | 16.1 | Tokenized syntax highlighting for multi-language code snippets |
+| Icons | Lucide React | 0.575 | Vector icon library |
+| Authentication | Firebase | 12.9 | Authentication handlers for Email, Google, and GitHub providers |
 
-### Backend
+### Backend Service
 
-| Technology | Version | Purpose |
-|:---|:---:|:---|
-| <img src="https://img.shields.io/badge/-Express-000000?logo=express&logoColor=white&style=flat-square" alt="Express" /> | `5.2` | Fast, minimalist web framework for Node.js |
-| <img src="https://img.shields.io/badge/-TypeScript-3178c6?logo=typescript&logoColor=white&style=flat-square" alt="TypeScript" /> | `5.9` | Static type checking for backend code |
-| <img src="https://img.shields.io/badge/-Groq_SDK-f55036?style=flat-square" alt="Groq" /> | `1.2` | LLM integration (Llama 3.3-70B) for AI doc generation |
-| <img src="https://img.shields.io/badge/-bcrypt-333?style=flat-square" alt="bcrypt" /> | `6.0` | Secure password hashing with salt |
-| <img src="https://img.shields.io/badge/-JWT-000000?logo=jsonwebtokens&logoColor=white&style=flat-square" alt="JWT" /> | `9.0` | Authentication token generation and validation |
-| <img src="https://img.shields.io/badge/-Prisma-2d3748?logo=prisma&logoColor=white&style=flat-square" alt="Prisma" /> | `7.4` | Modern ORM with type-safe database queries |
-| <img src="https://img.shields.io/badge/-Nodemon-76d04b?logo=nodemon&logoColor=white&style=flat-square" alt="Nodemon" /> | `3.1` | Dev server with automatic restart on file changes |
-| <img src="https://img.shields.io/badge/-dotenv-ecd53f?style=flat-square" alt="dotenv" /> | `17.3` | Environment variable management |
+| Component | Technology | Version | Purpose |
+|---|---|---|---|
+| Web Framework | Express | 5.2 | REST API routing and middleware pipeline |
+| Language | TypeScript | 5.9 | Static type checking across server modules |
+| LLM Provider | Groq SDK | 1.2 | High-throughput inference for Llama 3.3-70B |
+| ORM | Prisma | 7.4 | Database schema management and migrations |
+| Security | bcrypt / JWT | 6.0 / 9.0 | Password hashing and signed token verification |
+| Dev Server | Nodemon / ts-node | 3.1 | Automated server reload during local development |
+| Environment | dotenv | 17.3 | Secure configuration management |
+
+### CLI Tooling
+
+| Component | Technology | Version | Purpose |
+|---|---|---|---|
+| CLI Framework | Commander | 12.1 | Command-line argument parsing and flag management |
+| Terminal UI | @clack/prompts | 0.8 | Interactive command-line wizards and spinners |
+| File System | fs-extra | 11.2 | Enhanced promise-based file system utilities |
+| Ignore Parser | ignore | 6.0 | `.gitignore` rule processing during repository scanning |
+| Styling | picocolors | 1.1 | Terminal ANSI color output formatting |
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
-| Requirement | Version |
-|---|---|
-| **Node.js** | ≥ 18 |
-| **npm** | ≥ 9 (or yarn / pnpm) |
-| **Git** | Required on the server for the AI agent's repository cloning |
+Ensure the following runtimes and tools are installed on your workstation:
 
-### Frontend Setup
+- **Node.js**: Version 18.0.0 or higher
+- **npm**: Version 9.0.0 or higher (or `pnpm` / `yarn`)
+- **Git**: Installed and available in system `PATH` (required for repository cloning)
+
+### Frontend Installation
 
 ```bash
-# 1. Clone the repository
+# Clone the repository
 git clone https://github.com/ApurveKaranwal/mdfmt.git
 cd mdfmt
 
-# 2. Install frontend dependencies
+# Install frontend dependencies
 cd frontend
 npm install
 
-# 3. (Optional) Configure Firebase for authentication
+# Configure environment variables (optional)
 cp .env.example .env
-# Fill in your Firebase credentials — see Environment Variables below
 
-# 4. Start the dev server
+# Launch the development server
 npm run dev
 ```
 
-The dev server starts at `http://localhost:5173` with Vite's hot module replacement enabled.
+The web client will be accessible at `http://localhost:5173`.
 
-### Backend Setup
+### Backend Installation
 
 ```bash
-# 1. Navigate to backend
-cd backend
+# Navigate to backend directory
+cd ../backend
 npm install
 
-# 2. Configure environment
+# Configure environment variables
 cp .env.example .env
-# Set your Groq API key and other options — see Environment Variables below
+# Provide your GROQ_API_KEY if testing AI generation capabilities
 
-# 3. Start the dev server
+# Launch backend service
 npm run dev
 ```
 
-The backend API starts at `http://localhost:4000`.
+The backend API server will listen on `http://localhost:4000`.
 
-### Environment Variables
+### CLI Installation
 
-#### Frontend (`frontend/.env`)
+```bash
+# Navigate to cli directory
+cd ../cli
+npm install
 
-| Variable | Required | Description |
-|---|:---:|---|
-| `VITE_FIREBASE_API_KEY` | Optional | Firebase API key |
-| `VITE_FIREBASE_AUTH_DOMAIN` | Optional | Firebase auth domain |
-| `VITE_FIREBASE_PROJECT_ID` | Optional | Firebase project ID |
-| `VITE_FIREBASE_STORAGE_BUCKET` | Optional | Firebase storage bucket |
-| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Optional | Firebase messaging sender ID |
-| `VITE_FIREBASE_APP_ID` | Optional | Firebase app ID |
+# Compile TypeScript
+npm run build
 
-> **Note:** Firebase variables are optional. The editor works fully without them — authentication features are simply disabled.
+# Link globally for local testing
+npm link
+```
 
-#### Backend (`backend/.env`)
+Once linked, the `mdfmt` binary is executable from any directory on your system.
+
+---
+
+## Configuration and Environment Variables
+
+### Frontend Configuration (`frontend/.env`)
 
 | Variable | Required | Default | Description |
 |---|:---:|:---:|---|
-| `PORT` | No | `4000` | Server port |
-| `FRONTEND_ORIGIN` | No | `http://localhost:5173` | CORS allowed origin |
-| `GITHUB_TOKEN` | No | — | Improves clone access for private repos / rate-limited environments |
-| `GROQ_MODEL` | No | `llama-3.3-70b-versatile` | LLM model for AI generation |
-| `MAX_REPO_FILES` | No | `220` | Max files to sample per repository |
-| `MAX_REPO_BYTES` | No | `260000` | Max total bytes to read from a repo |
-| `MAX_FILE_BYTES` | No | `12000` | Max bytes per individual file |
+| `VITE_FIREBASE_API_KEY` | No | — | Firebase Web API key |
+| `VITE_FIREBASE_AUTH_DOMAIN` | No | — | Firebase authentication domain |
+| `VITE_FIREBASE_PROJECT_ID` | No | — | Firebase project identifier |
+| `VITE_FIREBASE_STORAGE_BUCKET` | No | — | Firebase storage bucket URL |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | No | — | Firebase cloud messaging sender ID |
+| `VITE_FIREBASE_APP_ID` | No | — | Firebase application ID |
 
-### Building for Production
+### Backend Configuration (`backend/.env`)
 
-```bash
-cd frontend
-npm run build       # Type-check with tsc, then bundle with Vite
-npm run preview     # Preview the production build locally
-```
-
-Production assets are output to `frontend/dist/`.
-
----
-
-## 📂 Project Structure
-
-```
-mdfmt/
-├── 📄 LICENSE                              # MIT License
-├── 📄 README.md                            # This file
-├── 📄 .gitignore                           # Global gitignore
-│
-├── 🎨 frontend/                            # React + Vite + TailwindCSS
-│   ├── 📄 index.html                       # HTML entry point
-│   ├── 📄 package.json                     # Dependencies & scripts
-│   ├── 📄 vite.config.ts                   # Vite configuration
-│   ├── 📄 tailwind.config.js               # Tailwind (class-based dark mode)
-│   ├── 📄 postcss.config.js                # PostCSS (Tailwind + Autoprefixer)
-│   ├── 📄 tsconfig.json                    # TypeScript project references
-│   ├── 📄 tsconfig.app.json                # App-level TS config
-│   ├── 📄 tsconfig.node.json               # Node-level TS config (Vite)
-│   ├── 📄 eslint.config.js                 # ESLint flat config
-│   ├── 📄 .env.example                     # Firebase env template
-│   ├── 📁 public/                          # Static assets
-│   │   └── vite.svg
-│   └── 📁 src/
-│       ├── 📄 main.tsx                     # Entry — mounts React with BrowserRouter
-│       ├── 📄 App.tsx                      # Root — defines 4 routes
-│       ├── 📄 index.css                    # Global + TipTap editor styles (8KB)
-│       │
-│       ├── 📁 pages/
-│       │   ├── 📄 EditorPage.tsx           # Main WYSIWYG editor + split preview
-│       │   ├── 📄 AiGeneratorPage.tsx      # AI documentation generator UI
-│       │   ├── 📄 BadgeStudioPage.tsx      # Badge creation & management
-│       │   ├── 📄 DiagramStudioPage.tsx    # Mermaid.js AI generation
-│       │   ├── 📄 ProfileBuilderPage.tsx   # GitHub profile builder wizard
-│       │   ├── 📄 TemplatesPage.tsx        # Pre-built README templates
-│       │   ├── 📄 SignInPage.tsx           # Sign in (Email + OAuth)
-│       │   └── 📄 SignUpPage.tsx           # Sign up with password strength
-│       │
-│       ├── 📁 components/
-│       │   ├── 📄 Navbar.tsx               # Top navigation bar
-│       │   ├── 📄 Toolbar.tsx              # Editor formatting toolbar
-│       │   ├── 📄 TableToolbar.tsx         # Table-specific actions
-│       │   ├── 📄 AlertBlockDropdown.tsx   # Alert block type picker
-│       │   ├── 📄 AutoTocButton.tsx        # Table of contents generator
-│       │   ├── 📄 SnippetDropdown.tsx      # Quick-insert snippets
-│       │   ├── 📄 EmojiPickerModal.tsx     # Emoji browser (7 categories)
-│       │   ├── 📄 InsertImageModal.tsx     # Image URL insertion
-│       │   ├── 📄 BadgePickerModal.tsx     # Pre-built badge library
-│       │   ├── 📄 CustomBadgeModal.tsx     # Custom badge builder
-│       │   ├── 📄 GitHubStatsModal.tsx     # GitHub repo stats badges
-│       │   ├── 📄 SocialLinksModal.tsx     # Social media link badges
-│       │   ├── 📄 TechStackGrid.tsx        # Quick tech stack grid
-│       │   └── 📄 TemplatesSidebar.tsx     # Template browser sidebar
-│       │
-│       ├── 📁 store/
-│       │   ├── 📄 useThemeStore.ts         # Dark mode state (Zustand)
-│       │   ├── 📄 useDraftStore.ts         # Editor draft persistence (Zustand + localStorage)
-│       │   └── 📄 useAuthStore.ts          # Auth state + Firebase listener (Zustand)
-│       │
-│       └── 📁 lib/
-│           ├── 📄 firebase.ts              # Firebase init + auth helpers
-│           └── 📄 markdownParser.ts        # MD → HTML parser for imports
-│
-└── ⚙️ backend/                             # Express + TypeScript API
-    ├── 📄 package.json                     # Dependencies & scripts
-    ├── 📄 tsconfig.json                    # TypeScript configuration
-    ├── 📄 .env.example                     # Backend env template
-    └── 📁 src/
-        ├── 📄 server.ts                    # Express app + middleware + error handling
-        ├── 📄 config.ts                    # Environment variable configuration
-        ├── 📄 types.ts                     # Shared TypeScript interfaces
-        │
-        ├── 📁 routes/
-        │   └── 📄 buildAiRoutes.ts         # AI documentation REST endpoints
-        │
-        ├── 📁 services/
-        │   ├── 📄 aiService.ts             # Documentation generation engine (857 lines)
-        │   ├── 📄 githubService.ts         # Repository cloning & file analysis
-        │   ├── 📄 llmService.ts            # Groq API integration
-        │   └── 📄 jobStore.ts              # In-memory job queue
-        │
-        └── 📁 utils/
-            ├── 📄 asyncHandler.ts          # Express async error wrapper
-            └── 📄 httpErrors.ts            # Custom HTTP error class
-```
+| Variable | Required | Default | Description |
+|---|:---:|:---:|---|
+| `PORT` | No | `4000` | HTTP server listening port |
+| `FRONTEND_ORIGIN` | No | `http://localhost:5173` | Allowed CORS origin for frontend requests |
+| `GROQ_API_KEY` | Conditional | — | API key for Groq LLM inference (required for AI features) |
+| `GROQ_MODEL` | No | `llama-3.3-70b-versatile` | LLM model identifier used for generation |
+| `GITHUB_TOKEN` | No | — | Personal access token for authenticated repository cloning |
+| `MAX_REPO_FILES` | No | `220` | Maximum number of files to sample during cloning |
+| `MAX_REPO_BYTES` | No | `260000` | Maximum aggregate bytes read during analysis |
+| `MAX_FILE_BYTES` | No | `12000` | Maximum bytes sampled per individual file |
 
 ---
 
-## 🔧 How It Works
+## API Reference
 
-### TipTap Editor Configuration
+All backend API endpoints are routed under the `/api/build-ai` namespace.
 
-The WYSIWYG editor is built on [TipTap](https://tiptap.dev/), a headless, framework-agnostic rich-text editor built on [ProseMirror](https://prosemirror.net/). The following extensions are loaded:
-
-| Extension | Purpose |
-|---|---|
-| `StarterKit` | Core nodes (paragraph, heading, code block, blockquote, lists, horizontal rule) and marks (bold, italic, strike, code) |
-| `Link` | Hyperlink support with `openOnClick: false` to prevent accidental navigation |
-| `Image` | Inline image insertion with base64 support |
-| `TaskList` + `TaskItem` | GitHub-style task lists with interactive checkboxes and nesting |
-| `Table` + `TableRow` + `TableHeader` + `TableCell` | Full table support with resizable columns |
-
-### HTML-to-Markdown Conversion
-
-[Turndown](https://github.com/mixmark-io/turndown) converts TipTap's HTML output into clean Markdown:
-
-```typescript
-const turndownService = new TurndownService({
-  headingStyle: 'atx',          // # Heading (not underline)
-  codeBlockStyle: 'fenced',     // ``` blocks (not indentation)
-  bulletListMarker: '-',        // - item (not * or +)
-});
-
-// Custom rule: <del>/<s> tags → ~~strikethrough~~
-turndownService.addRule('strikethrough', {
-  filter: ['del', 's'],
-  replacement: (content) => `~~${content}~~`,
-});
-
-// Custom rule: <img> → ![alt](src)
-turndownService.addRule('image', {
-  filter: 'img',
-  replacement: (_content, node) => {
-    const el = node as HTMLElement;
-    return `![${el.getAttribute('alt') || ''}](${el.getAttribute('src') || ''})`;
-  },
-});
-```
-
-### Markdown-to-HTML Parser
-
-When importing `.md` files, a custom parser (`markdownParser.ts`) converts Markdown back to HTML for the TipTap editor. It handles:
-
-- Fenced code blocks with language tags
-- Inline code
-- Headings (H1–H6)
-- Images and links
-- Blockquotes and alert blocks
-- Unordered and ordered lists
-- Paragraph wrapping with `<br />` for line breaks
-
-### State Management
-
-Three [Zustand](https://github.com/pmndrs/zustand) stores manage global state:
-
-| Store | State | Persistence |
-|---|---|---|
-| `useThemeStore` | `isDarkMode`, `toggleDarkMode()` | Toggles `dark` class on `document.documentElement` |
-| `useDraftStore` | `markdown`, `htmlContent`, `setMarkdown()`, `setHtmlContent()`, `clearDraft()` | `localStorage` (`mdfmt_md_draft`, `mdfmt_html_draft`) |
-| `useAuthStore` | `user`, `loading`, `setUser()`, `setLoading()` | Firebase `onAuthStateChanged` listener |
-
-### GitHub Repository Scraping
-
-The `githubService` performs intelligent repository analysis:
-
-1. **Shallow clone** — `git clone --depth 1` into a temp directory (supports authenticated clones via `GITHUB_TOKEN`)
-2. **File tree walk** — recursively lists all files, skipping ignored directories (`node_modules`, `.git`, `dist`, `build`, `__pycache__`, `vendor`, etc.)
-3. **Priority ranking** — files are scored by importance:
-   - `package.json`, `README.md`, `Cargo.toml`, `go.mod` → +20 points
-   - Routes, controllers, services, schemas → +8 points
-   - Test files → +4 points
-   - Markdown files → +10 points
-4. **Content sampling** — reads up to 220 files / 260KB total, truncating individual files at 12KB
-5. **Tech stack detection** — identifies Node.js, Vite, Tailwind, Next.js, React, Express, Python, Go, Rust, Docker, Firebase, Prisma, and more from manifests and file paths
-6. **Cleanup** — temporary clone directory is always deleted (`rm -rf` in `finally` block)
-
-### AI Documentation Generation
-
-The `aiService` supports two generation modes:
-
-**LLM-Powered (Groq):**
-- Uses the **Llama 3.3-70B** model with temperature 0.45 for README, 0.5 for architecture docs
-- Builds a focused context from repository metadata, dependencies, scripts, API routes, and sampled source files
-- Token-efficient chunked context strategy to stay within limits
-- Revision mode with temperature 0.35 for precise, feedback-driven edits
-
-**Template-Based Fallback:**
-- Activated when no Groq API key is provided
-- Generates structured README from detected badges, tech stack, feature bullets, file tree, prerequisites, scripts, API routes, and configuration
-- Produces architecture and development guide templates from repository analysis
-- Includes intelligent "creator questions" for missing information
-
----
-
-## 📡 API Reference
-
-All endpoints are prefixed with `/api/build-ai`.
+### Endpoints
 
 | Method | Endpoint | Description |
-|:---|:---|:---|
-| `POST` | `/jobs` | Create a new documentation generation job (async, returns immediately) |
-| `POST` | `/generate` | Create and wait for a documentation generation job (sync) |
-| `GET` | `/jobs/:jobId` | Get the current status and result of a job |
-| `POST` | `/jobs/:jobId/revise` | Submit feedback to revise generated documentation |
-| `POST` | `/jobs/:jobId/approve` | Approve generated files (optionally selective via `approvedPaths`) |
-| `GET` | `/health` | Health check endpoint |
+|---|---|---|
+| `GET` | `/health` | Health check endpoint returning service status |
+| `POST` | `/api/build-ai/jobs` | Creates an asynchronous documentation generation job (returns job ID) |
+| `POST` | `/api/build-ai/generate` | Synchronously generates documentation and returns the completed payload |
+| `GET` | `/api/build-ai/jobs/:jobId` | Retrieves status, logs, and generated content for a specific job |
+| `POST` | `/api/build-ai/jobs/:jobId/revise` | Submits natural language feedback to revise previously generated documentation |
+| `POST` | `/api/build-ai/jobs/:jobId/approve` | Approves and finalizes generated files |
+| `POST` | `/api/build-ai/diagram` | Generates Mermaid.js diagram definitions from a text prompt |
 
-### Request Body (`POST /jobs` and `POST /generate`)
+### Documentation Job Payload Example
 
 ```json
+POST /api/build-ai/jobs
+Content-Type: application/json
+
 {
-  "projectName": "My Project",
-  "githubUrl": "https://github.com/owner/repo",
+  "projectName": "ExampleService",
+  "githubUrl": "https://github.com/organization/example-service",
   "groqApiKey": "gsk_...",
-  "instructions": "Focus on the API documentation...",
+  "instructions": "Emphasize production deployment and environment variable reference.",
   "documentationDepth": "standard"
 }
 ```
 
-| Field | Type | Required | Description |
-|---|---|:---:|---|
-| `projectName` | string | ✅ | Title for the generated documentation (max 120 chars) |
-| `githubUrl` | string | ✅ | GitHub repository URL to analyze |
-| `groqApiKey` | string | ✅ | Groq API key for LLM-powered generation |
-| `instructions` | string | ❌ | Custom instructions for the AI (max 4000 chars) |
-| `documentationDepth` | string | ❌ | `readme-only` \| `standard` \| `complete` (default: `standard`) |
+#### Response:
 
-### Job Status Lifecycle
-
-```
-queued → scraping → generating → needs_review → approved
-                                      ↕
-                                   revising
-                                      
-         * Any stage can transition to → failed
+```json
+{
+  "job": {
+    "id": "c8f1e582-7d21-49fa-9281-a6e5b98b9e02",
+    "projectName": "ExampleService",
+    "status": "queued",
+    "createdAt": "2026-08-16T06:00:00.000Z"
+  }
+}
 ```
 
 ---
 
-## 🛣️ Roadmap
+## Project Directory Structure
 
-### 🔴 High Priority
-
-| Feature | Description |
-|---|---|
-| **Cloud Persistence** | Save README files to a database via Prisma ORM for cross-device access |
-| **Live Markdown Preview** | Rendered GitHub-style preview as a third pane option |
-| **Code Block Language Selector** | Dropdown to specify language for fenced code blocks |
-
-### 🟡 Medium Priority
-
-| Feature | Description |
-|---|---|
-| **Collaborative Editing** | Real-time collaboration via WebSockets + Yjs (TipTap supports it natively) |
-| **GitHub Push Integration** | Push generated README directly to a repository via the GitHub API |
-| **Responsive / Mobile Layout** | Stack panes vertically on smaller screens |
-| **Keyboard Shortcuts Panel** | Help modal listing all available shortcuts |
-| **Syntax Highlighting in Editor** | Code highlighting via `@tiptap/extension-code-block-lowlight` |
-
-### 🟢 Nice to Have
-
-| Feature | Description |
-|---|---|
-| **Export to PDF / RST** | Additional export formats beyond .md and .html |
-| **Version History** | Track changes over time with revert capability |
-| **Custom Themes** | Font selection, accent colors, and theme customization |
-| **Drag-and-Drop Reordering** | Reorder document sections via drag-and-drop |
+```text
+mdfmt/
+├── LICENSE                                # MIT License file
+├── README.md                              # Repository documentation
+├── .gitignore                             # Workspace gitignore rules
+│
+├── frontend/                              # Web application client
+│   ├── index.html                         # Single page application entry HTML
+│   ├── package.json                       # Frontend dependencies and scripts
+│   ├── vite.config.ts                     # Vite bundler configuration
+│   ├── tailwind.config.js                 # Tailwind design tokens and dark mode config
+│   ├── postcss.config.js                  # PostCSS plugin declarations
+│   ├── tsconfig.json                      # TypeScript root configuration
+│   ├── src/
+│   │   ├── main.tsx                       # React mounting and browser router setup
+│   │   ├── App.tsx                        # Route definitions and layout shell
+│   │   ├── index.css                      # Global styles and TipTap editor rules
+│   │   ├── pages/
+│   │   │   ├── EditorPage.tsx             # Visual WYSIWYG editor and dual-pane preview
+│   │   │   ├── CliPage.tsx                # CLI documentation and reference console
+│   │   │   ├── AiGeneratorPage.tsx        # Automated GitHub repository doc generator
+│   │   │   ├── BadgeStudioPage.tsx        # Shield badge library and custom badge designer
+│   │   │   ├── DiagramStudioPage.tsx      # Natural language to Mermaid.js diagram tool
+│   │   │   ├── ProfileBuilderPage.tsx     # GitHub profile README configuration wizard
+│   │   │   ├── TemplatesPage.tsx          # Structured documentation templates gallery
+│   │   │   ├── SignInPage.tsx             # User authentication sign-in
+│   │   │   └── SignUpPage.tsx             # User authentication registration
+│   │   ├── components/
+│   │   │   ├── Navbar.tsx                 # Header navigation bar
+│   │   │   ├── Toolbar.tsx                # WYSIWYG editor formatting controls
+│   │   │   ├── TableToolbar.tsx           # Tabular grid controls
+│   │   │   ├── AutoTocButton.tsx          # Table of contents generator button
+│   │   │   └── TechStackGrid.tsx          # Technology badge selection grid
+│   │   ├── store/
+│   │   │   ├── useThemeStore.ts           # Theme state management (light / dark)
+│   │   │   ├── useDraftStore.ts           # Editor content draft persistence
+│   │   │   └── useAuthStore.ts            # Authentication state store
+│   │   └── lib/
+│   │       ├── firebase.ts                # Firebase client initialization
+│   │       └── markdownParser.ts          # Markdown-to-HTML ingestion parser
+│
+├── backend/                               # Server API application
+│   ├── package.json                       # Backend dependencies and scripts
+│   ├── tsconfig.json                      # Backend TypeScript configuration
+│   └── src/
+│       ├── server.ts                      # Express application initialization and middleware
+│       ├── config.ts                      # Server configuration and environment mapping
+│       ├── types.ts                       # Shared TypeScript interfaces
+│       ├── routes/
+│       │   └── buildAiRoutes.ts           # Documentation generation REST routes
+│       ├── services/
+│       │   ├── aiService.ts               # Core documentation generation engine
+│       │   ├── githubService.ts           # Git repository shallow cloning and tree parsing
+│       │   ├── groqService.ts             # Groq LLM SDK client integration
+│       │   └── jobStore.ts                # Documentation job state management
+│       └── utils/
+│           ├── asyncHandler.ts            # Express async handler wrapper
+│           └── httpErrors.ts              # HTTP error classification utilities
+│
+└── cli/                                   # Command-line interface package
+    ├── package.json                       # CLI package manifests and dependencies
+    ├── tsconfig.json                      # CLI TypeScript configuration
+    ├── bin/
+    │   └── mdfmt.js                       # Executable CLI binary entrypoint
+    └── src/
+        ├── index.ts                       # Commander program and option declarations
+        ├── commands/
+        │   └── generate.ts                # Generate command execution logic
+        ├── scanner/
+        │   └── localScanner.ts            # Workspace tree walker and static file inspector
+        ├── api/
+        │   └── client.ts                  # Code analyzer, route parser, and fallback engine
+        └── utils/
+            └── diff.ts                    # Terminal colorized diff comparison formatter
+```
 
 ---
 
-## 📜 Scripts
+## Contributing
 
-### Frontend
+We welcome community contributions. To contribute to mdfmt:
 
-| Script | Command | Description |
-|---|---|---|
-| **Dev** | `npm run dev` | Start Vite dev server with HMR at `:5173` |
-| **Build** | `npm run build` | Type-check with `tsc -b` then bundle for production |
-| **Preview** | `npm run preview` | Serve the production build locally |
-| **Lint** | `npm run lint` | Run ESLint on all source files |
-
-### Backend
-
-| Script | Command | Description |
-|---|---|---|
-| **Dev** | `npm run dev` | Start with Nodemon + ts-node (auto-restart on changes) |
-| **Build** | `npm run build` | Compile TypeScript to `dist/` |
-| **Start** | `npm start` | Run the compiled production build |
-| **Typecheck** | `npm run typecheck` | Run `tsc --noEmit` for type validation |
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Here's how to get started:
-
-1. **Fork** the repository
-2. **Create** a feature branch
+1. **Fork the Repository**: Create a personal fork on GitHub.
+2. **Create a Feature Branch**:
    ```bash
-   git checkout -b feature/my-feature
+   git checkout -b feature/your-feature-name
    ```
-3. **Commit** your changes
+3. **Implement Changes**: Ensure all code conforms to project formatting and TypeScript type definitions.
+4. **Run Verification Builds**:
    ```bash
-   git commit -m "feat: add my feature"
-   ```
-4. **Push** to the branch
-   ```bash
-   git push origin feature/my-feature
-   ```
-5. **Open** a Pull Request
+   # In frontend/
+   npm run build
 
-Please ensure your code:
-- ✅ Passes linting — `npm run lint`
-- ✅ Builds successfully — `npm run build`
-- ✅ Follows existing code style and TypeScript conventions
+   # In backend/
+   npm run build
+
+   # In cli/
+   npm run build
+   ```
+5. **Commit and Push**:
+   ```bash
+   git commit -m "feat(scope): concise description of changes"
+   git push origin feature/your-feature-name
+   ```
+6. **Open a Pull Request**: Submit your pull request to the `main` branch with a clear summary of modifications.
 
 ---
 
-## 📄 License
+## License
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
-
-```
-MIT License
-
-Copyright (c) 2026 Apurve Karanwal
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software...
-```
-
----
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for the complete license text.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Made_with-❤️-dc2626?style=for-the-badge" alt="Made with love" />
-</p>
-
-<p align="center">
-  Built by <a href="https://github.com/ApurveKaranwal"><strong>Apurve Karanwal</strong></a>
-</p>
-
-<p align="center">
-  <a href="https://github.com/ApurveKaranwal"><img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white" alt="GitHub" /></a>&nbsp;
+  <sub>Maintained by <a href="https://github.com/ApurveKaranwal">Apurve Karanwal</a> and contributors.</sub>
 </p>
